@@ -33,3 +33,4 @@ targets:
         UIApplicationSupportsIndirectInputEvents: true
         UIRequiresFullScreen: true
         NSPhotoLibraryUsageDescription: "Add photos to your saved items"
+        NSLocationWhenInUseUsageDescription: "Habitly uses your location to show current weather conditions and forecasts."
