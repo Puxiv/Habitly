@@ -20,6 +20,8 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Habitly uses your location to show current weather conditions and forecasts.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Add photos to your saved items</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

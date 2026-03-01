@@ -4,6 +4,7 @@ import SwiftData
 struct DashboardView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(LanguageManager.self) var lang
+    @Environment(WeatherViewModel.self) var weatherVM
     @Binding var selectedTab: Int
 
     @Query(sort: \Habit.sortOrder, order: .forward) private var habits: [Habit]
@@ -48,6 +49,7 @@ struct DashboardView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     heroCard
+                    weatherCard
                     gridCards
                 }
                 .padding(.horizontal, 16)
@@ -141,6 +143,110 @@ struct DashboardView: View {
             .clipShape(RoundedRectangle(cornerRadius: 20))
         }
         .buttonStyle(.plain)
+    }
+
+    // MARK: - Weather Card
+
+    private var weatherCard: some View {
+        Button { selectedTab = 4 } label: {
+            ZStack(alignment: .topTrailing) {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(
+                        LinearGradient(
+                            colors: weatherGradient,
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+
+                Circle()
+                    .fill(.white.opacity(0.07))
+                    .frame(width: 100, height: 100)
+                    .offset(x: 30, y: -30)
+
+                HStack(spacing: 14) {
+                    // Condition icon
+                    Image(systemName: weatherVM.currentWeather?.condition.systemImage ?? "cloud.sun.fill")
+                        .font(.system(size: 36))
+                        .foregroundStyle(.white.opacity(0.9))
+                        .symbolRenderingMode(.hierarchical)
+                        .frame(width: 48)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(lang.dashWeatherTitle)
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(.white.opacity(0.75))
+
+                        if let w = weatherVM.currentWeather {
+                            Text(w.temperatureText)
+                                .font(.system(size: 28, weight: .bold, design: .rounded))
+                                .foregroundStyle(.white)
+                            Text(w.cityName + " · " + w.condition.displayName)
+                                .font(.caption)
+                                .foregroundStyle(.white.opacity(0.7))
+                        } else {
+                            Text(weatherLoadLabel)
+                                .font(.subheadline)
+                                .foregroundStyle(.white.opacity(0.7))
+                        }
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.5))
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 18)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .frame(height: 88)
+        }
+        .buttonStyle(.plain)
+        .task { await weatherVM.fetchWeather() }
+    }
+
+    private var weatherLoadLabel: String {
+        switch weatherVM.loadState {
+        case .loading: return lang.weatherLoading
+        case .error:   return lang.weatherErrorTitle
+        default:       return lang.dashWeatherTap
+        }
+    }
+
+    private var weatherGradient: [Color] {
+        guard let w = weatherVM.currentWeather else {
+            return [Color(red: 0.25, green: 0.60, blue: 0.95),
+                    Color(red: 0.15, green: 0.45, blue: 0.80)]
+        }
+        if !w.isDay {
+            return [Color(red: 0.10, green: 0.10, blue: 0.30),
+                    Color(red: 0.05, green: 0.05, blue: 0.20)]
+        }
+        switch w.condition {
+        case .clearSky, .mainlyClear:
+            return [Color(red: 0.25, green: 0.65, blue: 1.00),
+                    Color(red: 0.10, green: 0.45, blue: 0.85)]
+        case .partlyCloudy:
+            return [Color(red: 0.40, green: 0.65, blue: 0.95),
+                    Color(red: 0.30, green: 0.50, blue: 0.80)]
+        case .overcast, .fog:
+            return [Color(red: 0.50, green: 0.50, blue: 0.60),
+                    Color(red: 0.35, green: 0.35, blue: 0.45)]
+        case .drizzle, .rain:
+            return [Color(red: 0.30, green: 0.40, blue: 0.60),
+                    Color(red: 0.20, green: 0.30, blue: 0.50)]
+        case .heavyRain, .thunderstorm:
+            return [Color(red: 0.20, green: 0.25, blue: 0.40),
+                    Color(red: 0.10, green: 0.15, blue: 0.30)]
+        case .snow:
+            return [Color(red: 0.65, green: 0.80, blue: 0.95),
+                    Color(red: 0.50, green: 0.65, blue: 0.85)]
+        case .unknown:
+            return [Color(red: 0.45, green: 0.55, blue: 0.65),
+                    Color(red: 0.35, green: 0.45, blue: 0.55)]
+        }
     }
 
     // MARK: - Grid Cards
