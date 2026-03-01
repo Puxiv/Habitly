@@ -276,4 +276,22 @@ extension LanguageManager {
     var note:     String { t("Note",     "Бележка",    "Белешка",    "Белешка") }
     var archive:  String { t("Archive",  "Архивирай",  "Архивирай",  "Архивирай") }
     var complete: String { t("Complete", "Готово",     "Готово",     "Арно") }
+
+    // MARK: Weather
+    var weatherTab:          String { t("Weather",              "Времето",              "Времето",              "Времето") }
+    var weatherLoading:      String { t("Loading weather…",     "Зарежда времето…",     "Зарежда се…",          "Зарежда се…") }
+    var weatherRetry:        String { t("Try Again",            "Опитай пак",           "Пак пробвай",          "Пак пробвай") }
+    var weatherErrorTitle:   String { t("Couldn't Load Weather","Грешка при зареждане", "Нема времето",         "Нема времето") }
+    var weatherCheckLocation: String { t("Fetching your location…", "Намираме те…",     "Де си…",               "Де си бе…") }
+    var weatherHourly:       String { t("Hourly Forecast",      "По часове",            "По час",               "По час") }
+    var weatherDaily:        String { t("7-Day Forecast",       "7 дни напред",         "7 дена напред",        "7 дена напред") }
+    var weatherFeelsLike:    String { t("Feels Like",           "Усеща се",             "Усеща се",             "Усеща се") }
+    var weatherHumidity:     String { t("Humidity",             "Влажност",             "Влажност",             "Влажност") }
+    var weatherWind:         String { t("Wind",                 "Вятър",                "Вятър",                "Вятър") }
+    var weatherDayNight:     String { t("Time of Day",          "Ден/Нощ",              "Ден/Нощ",              "Ден/Нощ") }
+    var weatherDay:          String { t("Day",                  "Ден",                  "Ден",                  "Ден") }
+    var weatherNight:        String { t("Night",                "Нощ",                  "Нощ",                  "Нощ") }
+    var weatherToday:        String { t("Today",                "Днес",                 "Днеска",               "Днеска") }
+    var dashWeatherTitle:    String { t("Weather",              "Времето",              "Времето",              "Времето") }
+    var dashWeatherTap:      String { t("Tap to see forecast",  "Виж прогнозата",       "Виж прогнозата",       "Виж прогнозата") }
 }

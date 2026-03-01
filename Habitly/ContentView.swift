@@ -30,11 +30,17 @@ struct ContentView: View {
                 }
                 .tag(3)
 
+            WeatherView()
+                .tabItem {
+                    Label(lang.weatherTab, systemImage: "cloud.sun.fill")
+                }
+                .tag(4)
+
             SettingsView()
                 .tabItem {
                     Label(lang.settings, systemImage: "slider.horizontal.3")
                 }
-                .tag(4)
+                .tag(5)
         }
     }
 }

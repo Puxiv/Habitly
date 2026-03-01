@@ -7,6 +7,7 @@ struct HabitlyApp: App {
         WindowGroup {
             ContentView()
                 .environment(LanguageManager.shared)
+                .environment(WeatherViewModel.shared)
                 .task {
                     // Request notification permission early so the first toggle in-app
                     // triggers the system prompt rather than silently failing.
