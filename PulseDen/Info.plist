@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Habitly</string>
+	<string>PulseDen</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -20,8 +20,10 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>PulseDen reads your health data to show sleep, heart rate, and activity on your Dashboard</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Habitly uses your location to show current weather conditions and forecasts.</string>
+	<string>Your location is used to show local weather on the Dashboard</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Add photos to your saved items</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

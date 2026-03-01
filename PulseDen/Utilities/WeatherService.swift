@@ -5,13 +5,16 @@ import CoreLocation
 
 enum WeatherError: LocalizedError {
     case locationDenied
+    case locationTimeout
     case networkError
     case decodingError
 
     var errorDescription: String? {
         switch self {
         case .locationDenied:
-            return "Location access is required to fetch weather. Enable it in Settings → Habitly."
+            return "Location access is required to fetch weather. Enable it in Settings → PulseDen."
+        case .locationTimeout:
+            return "Could not determine your location. Please try again."
         case .networkError:
             return "Couldn't connect to the weather service. Check your internet connection."
         case .decodingError:
@@ -21,18 +24,14 @@ enum WeatherError: LocalizedError {
 }
 
 // MARK: - Weather Service
-//
-// WeatherService wraps CLLocationManager and the Open-Meteo API.
-// CLLocationManager must be created and used on the main thread;
-// since this singleton is first accessed from the @MainActor WeatherViewModel,
-// all operations naturally occur on the main thread.
 
+@MainActor
 final class WeatherService: NSObject, CLLocationManagerDelegate {
     static let shared = WeatherService()
 
     private let locationManager = CLLocationManager()
-    // Stores the in-flight continuation for a single location request.
     private var locationContinuation: CheckedContinuation<CLLocation, Error>?
+    private var timeoutTask: Task<Void, Never>?
 
     private override init() {
         super.init()
@@ -43,44 +42,75 @@ final class WeatherService: NSObject, CLLocationManagerDelegate {
     // MARK: - Location
 
     func requestLocation() async throws -> CLLocation {
-        try await withCheckedThrowingContinuation { cont in
+        // Cancel any stale continuation before starting a new one
+        locationContinuation?.resume(throwing: CancellationError())
+        locationContinuation = nil
+        timeoutTask?.cancel()
+
+        return try await withCheckedThrowingContinuation { cont in
             self.locationContinuation = cont
+
+            // Safety timeout — 15 seconds
+            self.timeoutTask = Task { @MainActor in
+                try? await Task.sleep(for: .seconds(15))
+                guard !Task.isCancelled else { return }
+                if self.locationContinuation != nil {
+                    self.locationContinuation?.resume(throwing: WeatherError.locationTimeout)
+                    self.locationContinuation = nil
+                }
+            }
+
             switch self.locationManager.authorizationStatus {
             case .authorizedWhenInUse, .authorizedAlways:
                 self.locationManager.requestLocation()
             case .notDetermined:
                 self.locationManager.requestWhenInUseAuthorization()
             default:
-                cont.resume(throwing: WeatherError.locationDenied)
-                self.locationContinuation = nil
+                self.resumeContinuation(throwing: WeatherError.locationDenied)
             }
         }
     }
 
-    // MARK: - CLLocationManagerDelegate
-
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let loc = locations.first else { return }
-        locationContinuation?.resume(returning: loc)
+    /// Safely resume and nil out the continuation exactly once.
+    private func resumeContinuation(returning location: CLLocation) {
+        timeoutTask?.cancel()
+        locationContinuation?.resume(returning: location)
         locationContinuation = nil
     }
 
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+    private func resumeContinuation(throwing error: Error) {
+        timeoutTask?.cancel()
         locationContinuation?.resume(throwing: error)
         locationContinuation = nil
     }
 
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        switch manager.authorizationStatus {
-        case .authorizedWhenInUse, .authorizedAlways:
-            if locationContinuation != nil {
-                manager.requestLocation()
+    // MARK: - CLLocationManagerDelegate
+
+    nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let loc = locations.first else { return }
+        Task { @MainActor in
+            self.resumeContinuation(returning: loc)
+        }
+    }
+
+    nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        Task { @MainActor in
+            self.resumeContinuation(throwing: error)
+        }
+    }
+
+    nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        Task { @MainActor in
+            switch manager.authorizationStatus {
+            case .authorizedWhenInUse, .authorizedAlways:
+                if self.locationContinuation != nil {
+                    manager.requestLocation()
+                }
+            case .denied, .restricted:
+                self.resumeContinuation(throwing: WeatherError.locationDenied)
+            default:
+                break
             }
-        case .denied, .restricted:
-            locationContinuation?.resume(throwing: WeatherError.locationDenied)
-            locationContinuation = nil
-        default:
-            break
         }
     }
 

@@ -124,10 +124,10 @@ extension LanguageManager {
                                     "Известията са изключени 🔕",
                                     "Известията са изключени 🔕",
                                     "Нема известия 🔕") }
-    var notifOffMessage: String { t("Head to Settings → Habitly to turn on notifications.",
-                                    "Отиди в Настройки → Habitly, за да включиш известията.",
-                                    "Иди в Наредби → Habitly да ги пуснеш.",
-                                    "Иди у Настройки → Habitly да ги пуснеш.") }
+    var notifOffMessage: String { t("Head to Settings → PulseDen to turn on notifications.",
+                                    "Отиди в Настройки → PulseDen, за да включиш известията.",
+                                    "Иди в Наредби → PulseDen да ги пуснеш.",
+                                    "Иди у Настройки → PulseDen да ги пуснеш.") }
     var openSettings:    String { t("Open Settings", "Отвори настройките", "Отвори наредбите", "Отвори настройките") }
 
     // MARK: History Stats
@@ -276,6 +276,44 @@ extension LanguageManager {
     var note:     String { t("Note",     "Бележка",    "Белешка",    "Белешка") }
     var archive:  String { t("Archive",  "Архивирай",  "Архивирай",  "Архивирай") }
     var complete: String { t("Complete", "Готово",     "Готово",     "Арно") }
+
+    // MARK: Chat / AI
+    var chatTab:         String { t("Chat",               "Чат",                "Чат",                "Чат") }
+    var chatTitle:       String { t("AI Assistant 🤖",    "AI Асистент 🤖",     "AI Помощник 🤖",     "AI Помощник 🤖") }
+    var chatPlaceholder: String { t("Ask me anything…",   "Питай ме нещо…",    "Питай ме нещо…",    "Питай ме нещо…") }
+    var chatWelcome:     String { t("I'm your PulseDen assistant! Ask me anything about your habits, reminders, or saved items 🌱",
+                                     "Аз съм твоят PulseDen асистент! Питай ме за навиците, напомнянията или нещата ти 🌱",
+                                     "Епа аз сам ти помощника! Питай ме за навиките, напомнянията или работите 🌱",
+                                     "Епа аз съм ти помощника! Питай ме за навиките, напомнянията или работите 🌱") }
+    var chatSend:        String { t("Send",               "Изпрати",           "Изпрати",           "Изпрати") }
+    var chatNoApiKey:    String { t("Set your Claude API key in Settings to start chatting",
+                                     "Добави Claude API ключ в Настройки",
+                                     "Тури Claude API ключ в Наредбите",
+                                     "Тури Claude API ключ у Настройки") }
+    var chatApiKeyTitle: String { t("Claude API Key",     "Claude API Ключ",   "Claude API Ключ",   "Claude API Ключ") }
+    var chatApiKeyPlaceholder: String { t("sk-ant-…",     "sk-ant-…",          "sk-ant-…",          "sk-ant-…") }
+    var chatApiKeyFooter: String { t("Get your key from console.anthropic.com",
+                                      "Вземи ключа от console.anthropic.com",
+                                      "Вземи ключа от console.anthropic.com",
+                                      "Вземи ключа от console.anthropic.com") }
+    var dashAiTitle:     String { t("AI Assistant",       "AI Асистент",       "AI Помощник",       "AI Помощник") }
+
+    // MARK: Health
+    var healthTab:       String { t("Health",              "Здраве",              "Здравето",            "Здравето") }
+    var healthTitle:     String { t("Health 🏥",           "Здраве 🏥",           "Здравето 🏥",         "Здравето 🏥") }
+    var healthSleep:     String { t("Sleep",               "Сън",                 "Сън",                 "Сън") }
+    var healthHeartRate: String { t("Heart Rate",          "Пулс",                "Пулс",                "Пулс") }
+    var healthSteps:     String { t("Steps",               "Стъпки",              "Стъпки",              "Стъпки") }
+    var healthCalories:  String { t("Active Calories",     "Активни калории",     "Активни калории",     "Активни калории") }
+    var healthConnect:   String { t("Connect Apple Health","Свържи Apple Health", "Свържи Apple Health", "Свържи Apple Health") }
+    var healthConnectSubtitle: String { t("See your sleep, heart rate, steps and activity right here",
+                                           "Виж съня, пулса, стъпките и активността си тук",
+                                           "Виж съня, пулса и стъпките тука",
+                                           "Виж съня, пулса и стъпките туке") }
+    var healthRetry:     String { t("Try Again",           "Опитай пак",          "Пак пробвай",         "Пак пробвай") }
+    var healthLastNight: String { t("Last night",          "Снощи",               "Снощи",               "Снощи") }
+    var healthRestingHR: String { t("Resting",             "В покой",             "В покой",             "В покой") }
+    var dashHealthTitle: String { t("Health",              "Здраве",              "Здравето",            "Здравето") }
 
     // MARK: Weather
     var weatherTab:          String { t("Weather",              "Времето",              "Времето",              "Времето") }

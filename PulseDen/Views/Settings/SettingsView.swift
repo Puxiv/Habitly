@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(LanguageManager.self) var lang
+    @State private var apiKey: String = UserDefaults.standard.string(forKey: "claude_api_key") ?? ""
 
     var body: some View {
         NavigationStack {
@@ -25,6 +26,20 @@ struct SettingsView: View {
                     }
                 } header: {
                     Text(lang.language)
+                }
+
+                Section {
+                    SecureField(lang.chatApiKeyPlaceholder, text: $apiKey)
+                        .textContentType(.password)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                        .onChange(of: apiKey) {
+                            UserDefaults.standard.set(apiKey, forKey: "claude_api_key")
+                        }
+                } header: {
+                    Text(lang.chatApiKeyTitle)
+                } footer: {
+                    Text(lang.chatApiKeyFooter)
                 }
             }
             .navigationTitle(lang.settings)

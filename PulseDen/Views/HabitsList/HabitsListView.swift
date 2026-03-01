@@ -44,7 +44,7 @@ struct HabitsListView: View {
                     .listStyle(.insetGrouped)
                 }
             }
-            .navigationTitle("Habitly")
+            .navigationTitle("PulseDen")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {

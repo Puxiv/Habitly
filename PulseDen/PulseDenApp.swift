@@ -2,12 +2,14 @@ import SwiftUI
 import SwiftData
 
 @main
-struct HabitlyApp: App {
+struct PulseDenApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environment(LanguageManager.shared)
                 .environment(WeatherViewModel.shared)
+                .environment(ChatViewModel.shared)
+                .environment(HealthViewModel.shared)
                 .task {
                     // Request notification permission early so the first toggle in-app
                     // triggers the system prompt rather than silently failing.

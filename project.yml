@@ -1,4 +1,4 @@
-name: Habitly
+name: PulseDen
 options:
   bundleIdPrefix: com.puxi
   deploymentTarget:
@@ -10,26 +10,32 @@ settings:
   SWIFT_VERSION: "5.9"
 
 targets:
-  Habitly:
+  PulseDen:
     type: application
     platform: iOS
     deploymentTarget: "17.0"
     sources:
-      - path: Habitly
+      - path: PulseDen
+    entitlements:
+      path: PulseDen/PulseDen.entitlements
+      properties:
+        com.apple.developer.healthkit: true
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.puxi.Habitly
+        PRODUCT_BUNDLE_IDENTIFIER: com.puxi.PulseDen
         MARKETING_VERSION: "1.0"
         CURRENT_PROJECT_VERSION: "1"
         SWIFT_VERSION: "5.9"
         DEVELOPMENT_TEAM: ""
     info:
-      path: Habitly/Info.plist
+      path: PulseDen/Info.plist
       properties:
-        CFBundleDisplayName: Habitly
+        CFBundleDisplayName: PulseDen
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         UIApplicationSupportsIndirectInputEvents: true
         UIRequiresFullScreen: true
+        NSLocationWhenInUseUsageDescription: "Your location is used to show local weather on the Dashboard"
         NSPhotoLibraryUsageDescription: "Add photos to your saved items"
+        NSHealthShareUsageDescription: "PulseDen reads your health data to show sleep, heart rate, and activity on your Dashboard"

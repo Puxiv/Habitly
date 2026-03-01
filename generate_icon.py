@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Habitly App Icon Generator — Head with Sprout 🌱
+PulseDen App Icon Generator — Heart with Pulse 💓
 Generates a 1024x1024 PNG and saves it to the Xcode assets folder.
-A cute, friendly head silhouette with a little sprout growing from the top.
+A dark background with a teal heart and white ECG pulse line.
 """
 
 from PIL import Image, ImageDraw, ImageFilter
@@ -11,7 +11,7 @@ import math, os
 SIZE = 1024
 OUT = os.path.join(
     os.path.dirname(__file__),
-    "Habitly/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png"
+    "PulseDen/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png"
 )
 
 # ── helpers ──────────────────────────────────────────────────────────────────

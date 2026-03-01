@@ -5,6 +5,7 @@ struct DashboardView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(LanguageManager.self) var lang
     @Environment(WeatherViewModel.self) var weatherVM
+    @Environment(HealthViewModel.self) var healthVM
     @Binding var selectedTab: Int
 
     @Query(sort: \Habit.sortOrder, order: .forward) private var habits: [Habit]
@@ -38,18 +39,14 @@ struct DashboardView: View {
         scheduledToday.filter { habitsVM.isCompletedToday($0) }.count
     }
 
-    private var topStreak: Int {
-        habits.map { habitsVM.currentStreak(for: $0) }.max() ?? 0
-    }
-
     // MARK: - Body
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    heroCard
                     weatherCard
+                    aiTeaserCard
                     gridCards
                 }
                 .padding(.horizontal, 16)
@@ -61,94 +58,10 @@ struct DashboardView: View {
         }
     }
 
-    // MARK: - Hero Card
-
-    private var heroCard: some View {
-        Button { selectedTab = 1 } label: {
-            ZStack(alignment: .bottomTrailing) {
-                // Gradient background
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(
-                        LinearGradient(
-                            colors: [Color(red: 0.35, green: 0.75, blue: 0.65),
-                                     Color(red: 0.20, green: 0.55, blue: 0.55)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-
-                // Decorative circle in top-right
-                Circle()
-                    .fill(.white.opacity(0.08))
-                    .frame(width: 140, height: 140)
-                    .offset(x: 40, y: -40)
-
-                // Another smaller decorative circle
-                Circle()
-                    .fill(.white.opacity(0.06))
-                    .frame(width: 90, height: 90)
-                    .offset(x: -20, y: 20)
-
-                // Content
-                VStack(alignment: .leading, spacing: 16) {
-                    // Top row: icon + label
-                    HStack(spacing: 10) {
-                        Image(systemName: "checkmark.seal.fill")
-                            .font(.title3)
-                            .foregroundStyle(.white.opacity(0.9))
-                        Text(lang.dashHabitsTitle)
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.white.opacity(0.85))
-                        Spacer()
-                    }
-
-                    if habits.isEmpty {
-                        Text(lang.dashNoHabitsYet)
-                            .font(.title3.weight(.medium))
-                            .foregroundStyle(.white.opacity(0.7))
-                    } else {
-                        // Big stat
-                        HStack(alignment: .firstTextBaseline, spacing: 4) {
-                            Text("\(completedToday)")
-                                .font(.system(size: 48, weight: .bold, design: .rounded))
-                                .foregroundStyle(.white)
-                            Text("/ \(scheduledToday.count)")
-                                .font(.title2.weight(.medium))
-                                .foregroundStyle(.white.opacity(0.6))
-                        }
-
-                        HStack(spacing: 12) {
-                            Text(lang.dashHabitsDone(completedToday, scheduledToday.count))
-                                .font(.subheadline)
-                                .foregroundStyle(.white.opacity(0.8))
-
-                            if topStreak > 0 {
-                                HStack(spacing: 4) {
-                                    Text("🔥")
-                                        .font(.caption)
-                                    Text("\(topStreak)")
-                                        .font(.subheadline.bold())
-                                        .foregroundStyle(.white)
-                                    Text(lang.dashBestStreak)
-                                        .font(.caption)
-                                        .foregroundStyle(.white.opacity(0.7))
-                                }
-                            }
-                        }
-                    }
-                }
-                .padding(24)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-        }
-        .buttonStyle(.plain)
-    }
-
     // MARK: - Weather Card
 
     private var weatherCard: some View {
-        Button { selectedTab = 4 } label: {
+        Button { selectedTab = 6 } label: {
             ZStack(alignment: .topTrailing) {
                 RoundedRectangle(cornerRadius: 20)
                     .fill(
@@ -249,6 +162,58 @@ struct DashboardView: View {
         }
     }
 
+    // MARK: - AI Teaser Card
+
+    private var aiTeaserCard: some View {
+        Button { selectedTab = 4 } label: {
+            ZStack(alignment: .topTrailing) {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(
+                        LinearGradient(
+                            colors: [Color(red: 0.45, green: 0.40, blue: 0.90),
+                                     Color(red: 0.60, green: 0.35, blue: 0.85)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+
+                Circle()
+                    .fill(.white.opacity(0.07))
+                    .frame(width: 90, height: 90)
+                    .offset(x: 25, y: -25)
+
+                HStack(spacing: 14) {
+                    Image(systemName: "bubble.left.and.text.bubble.right.fill")
+                        .font(.system(size: 30))
+                        .foregroundStyle(.white.opacity(0.9))
+                        .symbolRenderingMode(.hierarchical)
+                        .frame(width: 44)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(lang.dashAiTitle)
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(.white.opacity(0.75))
+                        Text(ChatViewModel.randomPrompt(lang: lang))
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.white)
+                            .lineLimit(2)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.5))
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .frame(height: 80)
+        }
+        .buttonStyle(.plain)
+    }
+
     // MARK: - Grid Cards
 
     private var gridCards: some View {
@@ -266,15 +231,15 @@ struct DashboardView: View {
                 tab: 2
             )
 
-            // Reminders — Overdue
+            // Habits
             gridCard(
-                icon: "exclamationmark.triangle.fill",
-                iconBg: Color.red,
-                title: lang.remindersOverdue.replacingOccurrences(of: " 🔴", with: ""),
-                value: "\(remindersVM.overdueCount(from: reminders))",
-                subtitle: overdueSubtitle,
-                accentColor: .red,
-                tab: 2
+                icon: "checkmark.seal.fill",
+                iconBg: Color(red: 0.35, green: 0.75, blue: 0.65),
+                title: lang.dashHabitsTitle,
+                value: habits.isEmpty ? "—" : "\(completedToday)/\(scheduledToday.count)",
+                subtitle: habits.isEmpty ? lang.dashNoHabitsYet : lang.dashHabitsDone(completedToday, scheduledToday.count),
+                accentColor: Color(red: 0.35, green: 0.75, blue: 0.65),
+                tab: 1
             )
 
             // Stuff — Items
@@ -288,15 +253,15 @@ struct DashboardView: View {
                 tab: 3
             )
 
-            // Best Streak
+            // Health
             gridCard(
-                icon: "flame.fill",
-                iconBg: Color(red: 1.0, green: 0.45, blue: 0.2),
-                title: lang.dashBestStreak,
-                value: topStreak > 0 ? "\(topStreak)" : "—",
-                subtitle: topStreak > 0 ? lang.streakLabel : lang.dashNoHabitsYet,
-                accentColor: Color(red: 1.0, green: 0.45, blue: 0.2),
-                tab: 1
+                icon: "heart.fill",
+                iconBg: Color(red: 1.0, green: 0.30, blue: 0.35),
+                title: lang.dashHealthTitle,
+                value: healthVM.dashboardValue,
+                subtitle: healthVM.dashboardSubtitle,
+                accentColor: Color(red: 1.0, green: 0.30, blue: 0.35),
+                tab: 5
             )
         }
     }
@@ -349,12 +314,6 @@ struct DashboardView: View {
             return "\(next.emoji) \(next.title)"
         }
         return lang.dashUpcoming(remindersVM.upcomingCount(from: reminders))
-    }
-
-    private var overdueSubtitle: String {
-        let count = remindersVM.overdueCount(from: reminders)
-        if count == 0 { return "✅" }
-        return lang.dashOverdue(count)
     }
 
     private var recentStuffSubtitle: String {

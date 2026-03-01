@@ -30,17 +30,29 @@ struct ContentView: View {
                 }
                 .tag(3)
 
+            ChatView()
+                .tabItem {
+                    Label(lang.chatTab, systemImage: "bubble.left.and.text.bubble.right.fill")
+                }
+                .tag(4)
+
+            HealthView()
+                .tabItem {
+                    Label(lang.healthTab, systemImage: "heart.fill")
+                }
+                .tag(5)
+
             WeatherView()
                 .tabItem {
                     Label(lang.weatherTab, systemImage: "cloud.sun.fill")
                 }
-                .tag(4)
+                .tag(6)
 
             SettingsView()
                 .tabItem {
                     Label(lang.settings, systemImage: "slider.horizontal.3")
                 }
-                .tag(5)
+                .tag(7)
         }
     }
 }
