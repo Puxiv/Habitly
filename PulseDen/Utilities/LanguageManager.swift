@@ -151,10 +151,10 @@ extension LanguageManager {
     var stuffTab:      String { t("Stuff",     "Неща",        "Работи",      "Работи") }
 
     // MARK: Dashboard Greetings
-    var greetingMorning:   String { t("Good morning! ☀️",      "Добро утро! ☀️",      "Добро утро! ☀️",      "Епа добро утро! ☀️") }
-    var greetingAfternoon: String { t("Good afternoon! 🌤️",    "Добър ден! 🌤️",       "Добър ден! 🌤️",       "Епа добър ден! 🌤️") }
-    var greetingEvening:   String { t("Good evening! 🌙",      "Добър вечер! 🌙",     "Добър вечер! 🌙",     "Арно вече! 🌙") }
-    var greetingNight:     String { t("Sweet dreams! 🌜",      "Лека нощ! 🌜",        "Лека нощ! 🌜",        "Лека нощ! 🌜") }
+    var greetingMorning:   String { t("Good morning! ☀️",      "Добро утро! ☀️",      "Яла, добро утро, баче! ☀️",  "Добро утро! Яз че съм тука! ☀️") }
+    var greetingAfternoon: String { t("Good afternoon! 🌤️",    "Добър ден! 🌤️",       "Е па добър ден! 🌤️",         "Добър ден! Са какво? 🌤️") }
+    var greetingEvening:   String { t("Good evening! 🌙",      "Добър вечер! 🌙",     "Арно вече, баче! 🌙",        "Добър вечер! Лека ноч! 🌙") }
+    var greetingNight:     String { t("Sweet dreams! 🌜",      "Лека нощ! 🌜",        "Връй пикай, па легай! 🌜",   "Лека ноч! 🌜") }
 
     // MARK: Dashboard Cards
     var dashHabitsTitle:    String { t("Habits",     "Навици",     "Навик",      "Навиците") }
@@ -277,26 +277,26 @@ extension LanguageManager {
     var archive:  String { t("Archive",  "Архивирай",  "Архивирай",  "Архивирай") }
     var complete: String { t("Complete", "Готово",     "Готово",     "Арно") }
 
-    // MARK: Chat / AI
-    var chatTab:         String { t("Chat",               "Чат",                "Чат",                "Чат") }
-    var chatTitle:       String { t("AI Assistant 🤖",    "AI Асистент 🤖",     "AI Помощник 🤖",     "AI Помощник 🤖") }
-    var chatPlaceholder: String { t("Ask me anything…",   "Питай ме нещо…",    "Питай ме нещо…",    "Питай ме нещо…") }
-    var chatWelcome:     String { t("I'm your PulseDen assistant! Ask me anything about your habits, reminders, or saved items 🌱",
-                                     "Аз съм твоят PulseDen асистент! Питай ме за навиците, напомнянията или нещата ти 🌱",
-                                     "Епа аз сам ти помощника! Питай ме за навиките, напомнянията или работите 🌱",
-                                     "Епа аз съм ти помощника! Питай ме за навиките, напомнянията или работите 🌱") }
+    // MARK: Chat / AI — Пучо
+    var chatTab:         String { t("Pucho",              "Пучо",               "Пучо",               "Пучо") }
+    var chatTitle:       String { t("Pucho 🐾",           "Пучо 🐾",            "Пучо 🐾",            "Пучо 🐾") }
+    var chatPlaceholder: String { t("Ask Pucho anything…", "Питай Пучо нещо…",  "Питай Пучо нещо…",  "Питай Пучо нещо…") }
+    var chatWelcome:     String { t("Hey! I'm Pucho — your PulseDen sidekick! I know your habits, reminders, stocks, health & more. Ask me anything! 🐾",
+                                     "Здрасти! Аз съм Пучо — твоят верен помощник в PulseDen! Знам за навиците, напомнянията, акциите и здравето ти. Питай ме! 🐾",
+                                     "Яла, баче! Язе сам Пучо — твоя помощник в PulseDen! Знам за навиците, напомнянията, акциите и здравето ти. Питай ме! 🐾",
+                                     "Яз съм Пучо — твоя помощник у PulseDen! Знам за навиците, напомнянията, акциите и здравето ти. Питай ме! 🐾") }
     var chatSend:        String { t("Send",               "Изпрати",           "Изпрати",           "Изпрати") }
-    var chatNoApiKey:    String { t("Set your Claude API key in Settings to start chatting",
-                                     "Добави Claude API ключ в Настройки",
-                                     "Тури Claude API ключ в Наредбите",
-                                     "Тури Claude API ключ у Настройки") }
+    var chatNoApiKey:    String { t("Set your Claude API key in Settings to wake up Pucho",
+                                     "Добави Claude API ключ в Настройки за да събудиш Пучо",
+                                     "Тури Claude API ключ в Наредбите за да събудиш Пучо",
+                                     "Тури Claude API ключ у Настройки за да събудиш Пучо") }
     var chatApiKeyTitle: String { t("Claude API Key",     "Claude API Ключ",   "Claude API Ключ",   "Claude API Ключ") }
     var chatApiKeyPlaceholder: String { t("sk-ant-…",     "sk-ant-…",          "sk-ant-…",          "sk-ant-…") }
     var chatApiKeyFooter: String { t("Get your key from console.anthropic.com",
                                       "Вземи ключа от console.anthropic.com",
                                       "Вземи ключа от console.anthropic.com",
                                       "Вземи ключа от console.anthropic.com") }
-    var dashAiTitle:     String { t("AI Assistant",       "AI Асистент",       "AI Помощник",       "AI Помощник") }
+    var dashAiTitle:     String { t("Pucho",              "Пучо",              "Пучо",              "Пучо") }
 
     // MARK: Health
     var healthTab:       String { t("Health",              "Здраве",              "Здравето",            "Здравето") }
@@ -314,6 +314,30 @@ extension LanguageManager {
     var healthLastNight: String { t("Last night",          "Снощи",               "Снощи",               "Снощи") }
     var healthRestingHR: String { t("Resting",             "В покой",             "В покой",             "В покой") }
     var dashHealthTitle: String { t("Health",              "Здраве",              "Здравето",            "Здравето") }
+
+    // MARK: Stocks
+    var stocksTab:            String { t("Stocks",               "Акции",               "Акции",               "Акции") }
+    var stocksTitle:          String { t("Stocks 📈",            "Акции 📈",            "Акции 📈",            "Акции 📈") }
+    var stocksAdd:            String { t("Add",                  "Добави",              "Тури",                "Тури") }
+    var stocksAddPlaceholder: String { t("Symbol (e.g. AAPL)",   "Символ (напр. AAPL)", "Символ (напр. AAPL)", "Символ (напр. AAPL)") }
+    var stocksSearchPlaceholder: String { t("Search stocks or enter symbol", "Търси акции или символ", "Тражи акции или символ", "Тражи акции или символ") }
+    var stocksEmpty:          String { t("Add stocks to track",  "Добави акции",        "Тури акции",          "Тури акции") }
+    var stocksRemove:         String { t("Remove",               "Премахни",            "Махни",               "Махни") }
+    var stocksTopMovers:      String { t("Top Movers",           "Най-големи промени",  "Най-големи промени",  "Най-големи промени") }
+    var dashStocksTitle:      String { t("Stocks",               "Акции",               "Акции",               "Акции") }
+    func stocksTracked(_ n: Int) -> String { t("\(n) stocks tracked", "\(n) акции", "\(n) акции", "\(n) акции") }
+
+    // MARK: News
+    var newsTab:               String { t("News",                         "Новини",                        "Новини",                        "Новини") }
+    var newsTitle:             String { t("News 📰",                     "Новини 📰",                     "Новини 📰",                     "Новини 📰") }
+    var newsWorldTitle:        String { t("World News",                   "Световни новини",               "Световни новини",               "Световни новини") }
+    var newsBulgarianTitle:    String { t("Bulgarian News",               "Български новини",              "Български новини",              "Български новини") }
+    var newsEmpty:             String { t("Add your GNews API key in Settings to see daily news", "Добави GNews API ключ в Настройки", "Тури GNews API ключ в Настройки", "Тури GNews API ключ в Настройки") }
+    var newsNoArticles:        String { t("No articles found",            "Няма намерени статии",          "Нема статии",                   "Нема статии") }
+    var dashNewsTitle:         String { t("News",                         "Новини",                        "Новини",                        "Новини") }
+    var newsApiKeyTitle:       String { t("GNews API Key",                "GNews API ключ",                "GNews API ключ",                "GNews API ключ") }
+    var newsApiKeyPlaceholder: String { t("Enter your GNews API key",    "Въведи GNews API ключ",         "Тури GNews API ключ",           "Тури GNews API ключ") }
+    var newsApiKeyFooter:      String { t("Get a free key at gnews.io",  "Вземи безплатен ключ от gnews.io", "Вземи ключ от gnews.io",    "Вземи ключ от gnews.io") }
 
     // MARK: Weather
     var weatherTab:          String { t("Weather",              "Времето",              "Времето",              "Времето") }

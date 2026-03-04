@@ -42,17 +42,29 @@ struct ContentView: View {
                 }
                 .tag(5)
 
+            StocksView()
+                .tabItem {
+                    Label(lang.stocksTab, systemImage: "chart.line.uptrend.xyaxis")
+                }
+                .tag(6)
+
+            NewsView()
+                .tabItem {
+                    Label(lang.newsTab, systemImage: "newspaper.fill")
+                }
+                .tag(7)
+
             WeatherView()
                 .tabItem {
                     Label(lang.weatherTab, systemImage: "cloud.sun.fill")
                 }
-                .tag(6)
+                .tag(8)
 
             SettingsView()
                 .tabItem {
                     Label(lang.settings, systemImage: "slider.horizontal.3")
                 }
-                .tag(7)
+                .tag(9)
         }
     }
 }

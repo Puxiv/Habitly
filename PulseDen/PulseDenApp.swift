@@ -10,6 +10,8 @@ struct PulseDenApp: App {
                 .environment(WeatherViewModel.shared)
                 .environment(ChatViewModel.shared)
                 .environment(HealthViewModel.shared)
+                .environment(StocksViewModel.shared)
+                .environment(NewsViewModel.shared)
                 .task {
                     // Request notification permission early so the first toggle in-app
                     // triggers the system prompt rather than silently failing.

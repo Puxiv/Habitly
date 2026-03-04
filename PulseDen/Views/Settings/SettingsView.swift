@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(LanguageManager.self) var lang
     @State private var apiKey: String = UserDefaults.standard.string(forKey: "claude_api_key") ?? ""
+    @State private var gnewsApiKey: String = UserDefaults.standard.string(forKey: "gnews_api_key") ?? ""
 
     var body: some View {
         NavigationStack {
@@ -40,6 +41,20 @@ struct SettingsView: View {
                     Text(lang.chatApiKeyTitle)
                 } footer: {
                     Text(lang.chatApiKeyFooter)
+                }
+
+                Section {
+                    SecureField(lang.newsApiKeyPlaceholder, text: $gnewsApiKey)
+                        .textContentType(.password)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                        .onChange(of: gnewsApiKey) {
+                            UserDefaults.standard.set(gnewsApiKey, forKey: "gnews_api_key")
+                        }
+                } header: {
+                    Text(lang.newsApiKeyTitle)
+                } footer: {
+                    Text(lang.newsApiKeyFooter)
                 }
             }
             .navigationTitle(lang.settings)

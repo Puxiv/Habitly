@@ -6,6 +6,8 @@ struct DashboardView: View {
     @Environment(LanguageManager.self) var lang
     @Environment(WeatherViewModel.self) var weatherVM
     @Environment(HealthViewModel.self) var healthVM
+    @Environment(StocksViewModel.self) var stocksVM
+    @Environment(NewsViewModel.self) var newsVM
     @Binding var selectedTab: Int
 
     @Query(sort: \Habit.sortOrder, order: .forward) private var habits: [Habit]
@@ -61,7 +63,7 @@ struct DashboardView: View {
     // MARK: - Weather Card
 
     private var weatherCard: some View {
-        Button { selectedTab = 6 } label: {
+        Button { selectedTab = 8 } label: {
             ZStack(alignment: .topTrailing) {
                 RoundedRectangle(cornerRadius: 20)
                     .fill(
@@ -262,6 +264,28 @@ struct DashboardView: View {
                 subtitle: healthVM.dashboardSubtitle,
                 accentColor: Color(red: 1.0, green: 0.30, blue: 0.35),
                 tab: 5
+            )
+
+            // Stocks
+            gridCard(
+                icon: "chart.line.uptrend.xyaxis",
+                iconBg: Color(red: 0.20, green: 0.78, blue: 0.45),
+                title: lang.dashStocksTitle,
+                value: stocksVM.dashboardValue,
+                subtitle: stocksVM.dashboardSubtitle,
+                accentColor: Color(red: 0.20, green: 0.78, blue: 0.45),
+                tab: 6
+            )
+
+            // News
+            gridCard(
+                icon: "newspaper.fill",
+                iconBg: Color(red: 0.25, green: 0.48, blue: 0.85),
+                title: lang.dashNewsTitle,
+                value: newsVM.dashboardValue,
+                subtitle: newsVM.dashboardSubtitle,
+                accentColor: Color(red: 0.25, green: 0.48, blue: 0.85),
+                tab: 7
             )
         }
     }

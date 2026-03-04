@@ -39,3 +39,5 @@ targets:
         NSLocationWhenInUseUsageDescription: "Your location is used to show local weather on the Dashboard"
         NSPhotoLibraryUsageDescription: "Add photos to your saved items"
         NSHealthShareUsageDescription: "PulseDen reads your health data to show sleep, heart rate, and activity on your Dashboard"
+        NSMicrophoneUsageDescription: "Pucho uses the microphone to hear your voice commands"
+        NSSpeechRecognitionUsageDescription: "Pucho uses speech recognition to convert your voice to text"

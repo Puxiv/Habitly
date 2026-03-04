@@ -5,12 +5,16 @@ struct ChatView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(LanguageManager.self) var lang
     @Environment(ChatViewModel.self) var chatVM
+    @Environment(HealthViewModel.self) var healthVM
+    @Environment(StocksViewModel.self) var stocksVM
+    @Environment(NewsViewModel.self) var newsVM
 
     @Query(sort: \Habit.sortOrder, order: .forward) private var habits: [Habit]
     @Query(sort: \Reminder.dateTime, order: .forward) private var reminders: [Reminder]
     @Query(sort: \StuffItem.createdAt, order: .reverse) private var stuffItems: [StuffItem]
 
     @FocusState private var isInputFocused: Bool
+    @State private var speechManager = SpeechManager()
 
     var body: some View {
         NavigationStack {
@@ -63,6 +67,7 @@ struct ChatView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle(lang.chatTitle)
+            .onAppear { speechManager.requestAuthorization() }
             .toolbar {
                 if !chatVM.messages.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
@@ -142,33 +147,82 @@ struct ChatView: View {
     @ViewBuilder
     private var inputBar: some View {
         @Bindable var vm = chatVM
-        HStack(spacing: 10) {
-            TextField(lang.chatPlaceholder, text: $vm.inputText, axis: .vertical)
-                .textFieldStyle(.plain)
-                .lineLimit(1...5)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
-                .focused($isInputFocused)
-
-            Button {
-                Task {
-                    await chatVM.sendMessage(
-                        lang: lang,
-                        habits: habits,
-                        reminders: reminders,
-                        stuffItems: stuffItems
-                    )
+        VStack(spacing: 0) {
+            // Live transcript overlay
+            if speechManager.isListening, !speechManager.transcript.isEmpty {
+                HStack(spacing: 8) {
+                    Circle()
+                        .fill(.red)
+                        .frame(width: 8, height: 8)
+                    Text(speechManager.transcript)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                    Spacer()
                 }
-            } label: {
-                Image(systemName: "arrow.up.circle.fill")
-                    .font(.system(size: 32))
-                    .foregroundStyle(canSend ? Color(red: 0.35, green: 0.75, blue: 0.65) : .gray.opacity(0.4))
+                .padding(.horizontal, 16)
+                .padding(.vertical, 6)
+                .background(Color(.secondarySystemGroupedBackground))
             }
-            .disabled(!canSend)
+
+            HStack(spacing: 8) {
+                TextField(lang.chatPlaceholder, text: $vm.inputText, axis: .vertical)
+                    .textFieldStyle(.plain)
+                    .lineLimit(1...5)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
+                    .focused($isInputFocused)
+
+                // Mic button
+                Button {
+                    if speechManager.isListening {
+                        let text = speechManager.stopListening()
+                        if !text.isEmpty {
+                            chatVM.inputText += (chatVM.inputText.isEmpty ? "" : " ") + text
+                        }
+                    } else {
+                        speechManager.startListening(locale: speechLocale)
+                    }
+                } label: {
+                    Image(systemName: speechManager.isListening ? "mic.fill" : "mic")
+                        .font(.system(size: 20))
+                        .foregroundStyle(speechManager.isListening ? .red : .secondary)
+                        .frame(width: 32, height: 32)
+                        .contentShape(Circle())
+                }
+
+                // Send button
+                Button {
+                    // Stop speech if active before sending
+                    if speechManager.isListening {
+                        let text = speechManager.stopListening()
+                        if !text.isEmpty {
+                            chatVM.inputText += (chatVM.inputText.isEmpty ? "" : " ") + text
+                        }
+                    }
+                    Task {
+                        await chatVM.sendMessage(
+                            lang: lang,
+                            habits: habits,
+                            reminders: reminders,
+                            stuffItems: stuffItems,
+                            healthVM: healthVM,
+                            stocksVM: stocksVM,
+                            newsVM: newsVM,
+                            modelContext: modelContext
+                        )
+                    }
+                } label: {
+                    Image(systemName: "arrow.up.circle.fill")
+                        .font(.system(size: 32))
+                        .foregroundStyle(canSend ? Color(red: 0.35, green: 0.75, blue: 0.65) : .gray.opacity(0.4))
+                }
+                .disabled(!canSend)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
         .background(.bar)
     }
 
@@ -209,24 +263,31 @@ struct ChatView: View {
         return !key.trimmingCharacters(in: .whitespaces).isEmpty
     }
 
+    private var speechLocale: Locale {
+        switch lang.current {
+        case .english: return Locale(identifier: "en-US")
+        case .bulgarian, .northwestern, .shopluk: return Locale(identifier: "bg-BG")
+        }
+    }
+
     private var quickPrompts: [String] {
         switch lang.current {
         case .english:
-            return ["How are my habits going? 🌱",
-                    "What's overdue? ⏰",
-                    "Motivate me! 💪"]
+            return ["Pucho, how are my habits? 🌱",
+                    "What did I miss? ⏰",
+                    "Pucho, motivate me! 💪"]
         case .bulgarian:
-            return ["Как съм с навиците? 🌱",
+            return ["Пучо, как съм с навиците? 🌱",
                     "Какво съм пропуснал? ⏰",
-                    "Мотивирай ме! 💪"]
+                    "Пучо, мотивирай ме! 💪"]
         case .northwestern:
-            return ["Как съм с навиките? 🌱",
+            return ["Пучо, как сам с навиците? 🌱",
                     "Шо сам пропуснАл? ⏰",
-                    "Епа мотивирай ме! 💪"]
+                    "Пучо, мотивирай ме! 💪"]
         case .shopluk:
-            return ["Как съм с навиките? 🌱",
+            return ["Пучо, как съм с навиците? 🌱",
                     "Шо съм пропуснал? ⏰",
-                    "Мотивирай ме! 💪"]
+                    "Пучо, мотивирай ме! 💪"]
         }
     }
 }

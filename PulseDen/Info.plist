@@ -24,8 +24,12 @@
 	<string>PulseDen reads your health data to show sleep, heart rate, and activity on your Dashboard</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Your location is used to show local weather on the Dashboard</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Pucho uses the microphone to hear your voice commands</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Add photos to your saved items</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Pucho uses speech recognition to convert your voice to text</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchScreen</key>
