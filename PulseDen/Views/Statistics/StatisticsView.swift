@@ -42,17 +42,17 @@ struct StatisticsView: View {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule()
-                        .fill(Color(.systemGray5))
+                        .fill(Theme.cardElevated)
                         .frame(height: 10)
                     Capsule()
-                        .fill(Color.accentColor)
+                        .fill(Theme.accent)
                         .frame(width: geo.size.width * rate, height: 10)
                 }
             }
             .frame(height: 10)
         }
         .padding(20)
-        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: 16))
     }
 
     private var habitsList: some View {
@@ -86,7 +86,7 @@ struct StatisticsView: View {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule()
-                        .fill(Color(.systemGray5))
+                        .fill(Theme.cardElevated)
                         .frame(height: 8)
                     Capsule()
                         .fill(accent)
@@ -105,7 +105,7 @@ struct StatisticsView: View {
             }
         }
         .padding(14)
-        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: 12))
     }
 
     private var emptyState: some View {

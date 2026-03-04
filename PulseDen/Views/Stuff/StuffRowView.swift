@@ -9,7 +9,7 @@ struct StuffRowView: View {
             // Emoji circle
             ZStack {
                 Circle()
-                    .fill(Color.accentColor.opacity(0.15))
+                    .fill(Theme.accent.opacity(0.15))
                     .frame(width: 44, height: 44)
                 Text(item.emoji)
                     .font(.title3)
@@ -32,7 +32,7 @@ struct StuffRowView: View {
                     }
                     .padding(.horizontal, 7)
                     .padding(.vertical, 2)
-                    .background(Color(.tertiarySystemFill), in: Capsule())
+                    .background(Theme.cardElevated, in: Capsule())
 
                     // Star rating (compact)
                     HStack(spacing: 1) {

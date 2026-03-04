@@ -29,7 +29,7 @@ struct ChatView: View {
                             }
 
                             ForEach(chatVM.messages) { msg in
-                                ChatBubbleView(message: msg)
+                                ChatBubbleView(message: msg, speechManager: speechManager, speechLocale: speechLocale)
                                     .id(msg.id)
                             }
 
@@ -60,22 +60,30 @@ struct ChatView: View {
                     }
                 }
 
-                Divider()
+                Divider().overlay(Theme.textTertiary.opacity(0.3))
 
-                // Input bar
                 inputBar
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Theme.background)
             .navigationTitle(lang.chatTitle)
             .onAppear { speechManager.requestAuthorization() }
+            .onChange(of: chatVM.isLoading) { wasLoading, isLoading in
+                if wasLoading && !isLoading && lang.autoSpeak,
+                   let last = chatVM.messages.last, last.role == .assistant,
+                   !last.content.isEmpty, !last.content.hasPrefix("⚠️") {
+                    speechManager.speak(last.content, locale: speechLocale, messageId: last.id)
+                }
+            }
             .toolbar {
                 if !chatVM.messages.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
+                            speechManager.stopSpeaking()
                             chatVM.clearChat()
                         } label: {
                             Image(systemName: "trash")
                                 .font(.caption)
+                                .foregroundStyle(Theme.textSecondary)
                         }
                     }
                 }
@@ -87,28 +95,26 @@ struct ChatView: View {
 
     private var welcomeView: some View {
         VStack(spacing: 16) {
-            Image(systemName: "bubble.left.and.text.bubble.right.fill")
-                .font(.system(size: 50))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [Color(red: 0.45, green: 0.40, blue: 0.90),
-                                 Color(red: 0.60, green: 0.35, blue: 0.85)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+            ZStack {
+                Circle()
+                    .fill(Theme.accent.opacity(0.12))
+                    .frame(width: 80, height: 80)
+                Image(systemName: "bubble.left.and.text.bubble.right.fill")
+                    .font(.system(size: 36))
+                    .foregroundStyle(Theme.accent)
+                    .symbolRenderingMode(.hierarchical)
+            }
 
             Text(lang.chatWelcome)
                 .font(.title3.weight(.medium))
                 .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
                 .padding(.horizontal, 40)
 
             if !hasApiKey {
                 noApiKeyBanner
             }
 
-            // Quick prompt suggestions
             VStack(spacing: 8) {
                 ForEach(quickPrompts, id: \.self) { prompt in
                     Button {
@@ -118,8 +124,9 @@ struct ChatView: View {
                             .font(.subheadline)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 10)
-                            .background(Color(.secondarySystemGroupedBackground), in: Capsule())
-                            .foregroundStyle(.primary)
+                            .background(Theme.card, in: Capsule())
+                            .foregroundStyle(.white)
+                            .overlay(Capsule().strokeBorder(Theme.accent.opacity(0.2), lineWidth: 1))
                     }
                 }
             }
@@ -135,7 +142,7 @@ struct ChatView: View {
                 .foregroundStyle(.orange)
             Text(lang.chatNoApiKey)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
         }
         .padding(12)
         .background(Color.orange.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
@@ -148,7 +155,28 @@ struct ChatView: View {
     private var inputBar: some View {
         @Bindable var vm = chatVM
         VStack(spacing: 0) {
-            // Live transcript overlay
+            if let micError = speechManager.errorMessage {
+                HStack(spacing: 6) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.orange)
+                        .font(.caption)
+                    Text(micError)
+                        .font(.caption)
+                        .foregroundStyle(Theme.textSecondary)
+                    Spacer()
+                    Button {
+                        speechManager.errorMessage = nil
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(Theme.textSecondary)
+                            .font(.caption)
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 6)
+                .background(Color.orange.opacity(0.1))
+            }
+
             if speechManager.isListening, !speechManager.transcript.isEmpty {
                 HStack(spacing: 8) {
                     Circle()
@@ -156,13 +184,13 @@ struct ChatView: View {
                         .frame(width: 8, height: 8)
                     Text(speechManager.transcript)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.textSecondary)
                         .lineLimit(2)
                     Spacer()
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 6)
-                .background(Color(.secondarySystemGroupedBackground))
+                .background(Theme.card)
             }
 
             HStack(spacing: 8) {
@@ -171,10 +199,13 @@ struct ChatView: View {
                     .lineLimit(1...5)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
-                    .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
+                    .background(Theme.card, in: RoundedRectangle(cornerRadius: 20))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .strokeBorder(Theme.textTertiary.opacity(0.3), lineWidth: 1)
+                    )
                     .focused($isInputFocused)
 
-                // Mic button
                 Button {
                     if speechManager.isListening {
                         let text = speechManager.stopListening()
@@ -187,14 +218,12 @@ struct ChatView: View {
                 } label: {
                     Image(systemName: speechManager.isListening ? "mic.fill" : "mic")
                         .font(.system(size: 20))
-                        .foregroundStyle(speechManager.isListening ? .red : .secondary)
+                        .foregroundStyle(speechManager.isListening ? .red : Theme.textSecondary)
                         .frame(width: 32, height: 32)
                         .contentShape(Circle())
                 }
 
-                // Send button
                 Button {
-                    // Stop speech if active before sending
                     if speechManager.isListening {
                         let text = speechManager.stopListening()
                         if !text.isEmpty {
@@ -216,14 +245,14 @@ struct ChatView: View {
                 } label: {
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.system(size: 32))
-                        .foregroundStyle(canSend ? Color(red: 0.35, green: 0.75, blue: 0.65) : .gray.opacity(0.4))
+                        .foregroundStyle(canSend ? Theme.accent : Theme.textTertiary.opacity(0.4))
                 }
                 .disabled(!canSend)
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
         }
-        .background(.bar)
+        .background(Theme.background)
     }
 
     // MARK: - Typing Indicator
@@ -232,7 +261,7 @@ struct ChatView: View {
         HStack(spacing: 4) {
             ForEach(0..<3) { i in
                 Circle()
-                    .fill(Color.secondary.opacity(0.5))
+                    .fill(Theme.accent.opacity(0.5))
                     .frame(width: 8, height: 8)
                     .scaleEffect(chatVM.isLoading ? 1.0 : 0.5)
                     .animation(
@@ -245,7 +274,7 @@ struct ChatView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
-        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 18))
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: 18))
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 12)
     }
@@ -266,28 +295,37 @@ struct ChatView: View {
     private var speechLocale: Locale {
         switch lang.current {
         case .english: return Locale(identifier: "en-US")
-        case .bulgarian, .northwestern, .shopluk: return Locale(identifier: "bg-BG")
+        case .bulgarian, .northwestern, .shopluk, .plovdiv, .burgas: return Locale(identifier: "bg-BG")
         }
     }
 
     private var quickPrompts: [String] {
+        let n = lang.aiName
         switch lang.current {
         case .english:
-            return ["Pucho, how are my habits? 🌱",
+            return ["\(n), how are my habits? 🌱",
                     "What did I miss? ⏰",
-                    "Pucho, motivate me! 💪"]
+                    "\(n), motivate me! 💪"]
         case .bulgarian:
-            return ["Пучо, как съм с навиците? 🌱",
+            return ["\(n), как съм с навиците? 🌱",
                     "Какво съм пропуснал? ⏰",
-                    "Пучо, мотивирай ме! 💪"]
+                    "\(n), мотивирай ме! 💪"]
         case .northwestern:
-            return ["Пучо, как сам с навиците? 🌱",
+            return ["\(n), как сам с навиците? 🌱",
                     "Шо сам пропуснАл? ⏰",
-                    "Пучо, мотивирай ме! 💪"]
+                    "\(n), мотивирай ме! 💪"]
         case .shopluk:
-            return ["Пучо, как съм с навиците? 🌱",
+            return ["\(n), как съм с навиците? 🌱",
                     "Шо съм пропуснал? ⏰",
-                    "Пучо, мотивирай ме! 💪"]
+                    "\(n), мотивирай ме! 💪"]
+        case .plovdiv:
+            return ["\(n), как съм с навиците бе? 🌱",
+                    "Кво съм пропуснал бе? ⏰",
+                    "\(n), майна, мотивирай ме! 💪"]
+        case .burgas:
+            return ["\(n), как съм с навиците батка? 🌱",
+                    "Кво съм пропуснал батка? ⏰",
+                    "\(n), море, мотивирай ме! 💪"]
         }
     }
 }

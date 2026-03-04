@@ -6,6 +6,8 @@ struct PulseDenApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .preferredColorScheme(.dark)
+                .tint(Theme.accent)
                 .environment(LanguageManager.shared)
                 .environment(WeatherViewModel.shared)
                 .environment(ChatViewModel.shared)

@@ -14,6 +14,7 @@ struct HealthView: View {
                         switch healthVM.loadState {
                         case .loading:
                             ProgressView()
+                                .tint(Theme.accent)
                                 .padding(.top, 60)
                         case .error(let msg):
                             errorView(msg)
@@ -26,7 +27,7 @@ struct HealthView: View {
                 .padding(.top, 8)
                 .padding(.bottom, 32)
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Theme.background)
             .navigationTitle(lang.healthTitle)
             .refreshable {
                 if healthVM.isAuthorized {
@@ -45,16 +46,14 @@ struct HealthView: View {
 
     private var connectCard: some View {
         VStack(spacing: 20) {
-            Image(systemName: "heart.fill")
-                .font(.system(size: 56))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [Color(red: 1.0, green: 0.35, blue: 0.40),
-                                 Color(red: 0.90, green: 0.20, blue: 0.35)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+            ZStack {
+                Circle()
+                    .fill(Theme.accent.opacity(0.12))
+                    .frame(width: 100, height: 100)
+                Image(systemName: "heart.fill")
+                    .font(.system(size: 44))
+                    .foregroundStyle(Theme.accent)
+            }
 
             Text(lang.healthConnect)
                 .font(.title3.weight(.medium))
@@ -62,7 +61,7 @@ struct HealthView: View {
 
             Text(lang.healthConnectSubtitle)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 20)
 
@@ -71,18 +70,10 @@ struct HealthView: View {
             } label: {
                 Text(lang.healthConnect)
                     .font(.headline)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.black)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
-                    .background(
-                        LinearGradient(
-                            colors: [Color(red: 1.0, green: 0.35, blue: 0.40),
-                                     Color(red: 0.90, green: 0.20, blue: 0.35)],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        ),
-                        in: RoundedRectangle(cornerRadius: 14)
-                    )
+                    .background(Theme.accent, in: RoundedRectangle(cornerRadius: 14))
             }
             .padding(.horizontal, 20)
         }
@@ -98,13 +89,13 @@ struct HealthView: View {
                 .foregroundStyle(.orange)
             Text(message)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)
             Button(lang.healthRetry) {
                 Task { await healthVM.refresh() }
             }
             .buttonStyle(.borderedProminent)
-            .tint(.red)
+            .tint(Theme.accent)
         }
         .padding(.top, 40)
     }
@@ -116,20 +107,17 @@ struct HealthView: View {
             // Sleep Card
             healthCard(
                 icon: "bed.double.fill",
-                iconColor: Color(red: 0.35, green: 0.30, blue: 0.80),
-                gradientColors: [Color(red: 0.35, green: 0.30, blue: 0.80),
-                                 Color(red: 0.50, green: 0.35, blue: 0.90)],
+                iconColor: Color(red: 0.55, green: 0.40, blue: 0.95),
                 title: lang.healthSleep,
                 value: healthVM.summary?.sleepText ?? "—",
                 subtitle: lang.healthLastNight,
                 statusColor: sleepStatusColor
             )
 
-            // Heart Rate Card
             HStack(spacing: 14) {
                 smallCard(
                     icon: "heart.fill",
-                    iconColor: .red,
+                    iconColor: Theme.negative,
                     title: lang.healthRestingHR,
                     value: healthVM.summary?.restingHRText ?? "—"
                 )
@@ -141,11 +129,10 @@ struct HealthView: View {
                 )
             }
 
-            // Activity Card
             HStack(spacing: 14) {
                 smallCard(
                     icon: "figure.walk",
-                    iconColor: .green,
+                    iconColor: Theme.accent,
                     title: lang.healthSteps,
                     value: healthVM.summary?.stepsText ?? "—"
                 )
@@ -164,60 +151,42 @@ struct HealthView: View {
     private func healthCard(
         icon: String,
         iconColor: Color,
-        gradientColors: [Color],
         title: String,
         value: String,
         subtitle: String,
         statusColor: Color
     ) -> some View {
-        ZStack(alignment: .topTrailing) {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(
-                    LinearGradient(
-                        colors: gradientColors,
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+        HStack(spacing: 16) {
+            ZStack {
+                Circle()
+                    .fill(iconColor.opacity(0.15))
+                    .frame(width: 52, height: 52)
+                Image(systemName: icon)
+                    .font(.system(size: 24))
+                    .foregroundStyle(iconColor)
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(Theme.textSecondary)
+                Text(value)
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white)
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(Theme.textTertiary)
+            }
+
+            Spacer()
 
             Circle()
-                .fill(.white.opacity(0.07))
-                .frame(width: 100, height: 100)
-                .offset(x: 30, y: -30)
-
-            HStack(spacing: 16) {
-                Image(systemName: icon)
-                    .font(.system(size: 32))
-                    .foregroundStyle(.white.opacity(0.9))
-                    .frame(width: 44)
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(title)
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(.white.opacity(0.75))
-                    Text(value)
-                        .font(.system(size: 32, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
-                    Text(subtitle)
-                        .font(.caption)
-                        .foregroundStyle(.white.opacity(0.65))
-                }
-
-                Spacer()
-
-                // Status dot
-                Circle()
-                    .fill(statusColor)
-                    .frame(width: 12, height: 12)
-                    .overlay(
-                        Circle().stroke(.white.opacity(0.3), lineWidth: 1)
-                    )
-            }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 18)
+                .fill(statusColor)
+                .frame(width: 12, height: 12)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 20))
-        .frame(height: 110)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 18)
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: 20))
     }
 
     // MARK: - Small Card Component
@@ -235,23 +204,23 @@ struct HealthView: View {
 
             Text(title)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
 
             Text(value)
                 .font(.system(size: 24, weight: .bold, design: .rounded))
-                .foregroundStyle(.primary)
+                .foregroundStyle(.white)
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: 16))
     }
 
     // MARK: - Helpers
 
     private var sleepStatusColor: Color {
-        guard let h = healthVM.summary?.sleepHours else { return .gray }
-        if h >= 7 { return .green }
+        guard let h = healthVM.summary?.sleepHours else { return Theme.textTertiary }
+        if h >= 7 { return Theme.accent }
         if h >= 5 { return .orange }
-        return .red
+        return Theme.negative
     }
 }

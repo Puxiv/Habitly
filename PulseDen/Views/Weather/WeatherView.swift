@@ -21,7 +21,7 @@ struct WeatherView: View {
                 }
             }
             .navigationTitle(lang.weatherTab)
-            .background(Color(.systemGroupedBackground))
+            .background(Theme.background)
         }
         .task {
             await weatherVM.fetchWeather()
@@ -34,12 +34,12 @@ struct WeatherView: View {
         VStack(spacing: 16) {
             Image(systemName: "cloud.sun.fill")
                 .font(.system(size: 64))
-                .foregroundStyle(.yellow, .blue)
+                .foregroundStyle(Theme.accent)
                 .symbolRenderingMode(.hierarchical)
             Text(lang.weatherCheckLocation)
                 .font(.headline)
                 .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -47,10 +47,11 @@ struct WeatherView: View {
     private var loadingView: some View {
         VStack(spacing: 16) {
             ProgressView()
+                .tint(Theme.accent)
                 .scaleEffect(1.4)
             Text(lang.weatherLoading)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -64,13 +65,14 @@ struct WeatherView: View {
                 .font(.headline)
             Text(message)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
             Button(lang.weatherRetry) {
                 Task { await weatherVM.refresh() }
             }
             .buttonStyle(.borderedProminent)
+            .tint(Theme.accent)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -113,12 +115,12 @@ struct WeatherView: View {
                 )
 
             Circle()
-                .fill(.white.opacity(0.08))
+                .fill(.white.opacity(0.06))
                 .frame(width: 150, height: 150)
                 .offset(x: 45, y: -45)
 
             Circle()
-                .fill(.white.opacity(0.05))
+                .fill(.white.opacity(0.04))
                 .frame(width: 100, height: 100)
                 .offset(x: -25, y: 25)
 
@@ -166,7 +168,7 @@ struct WeatherView: View {
         VStack(alignment: .leading, spacing: 0) {
             Label(lang.weatherHourly, systemImage: "clock")
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
                 .padding(.horizontal, 16)
                 .padding(.top, 16)
                 .padding(.bottom, 12)
@@ -177,17 +179,18 @@ struct WeatherView: View {
                         VStack(spacing: 8) {
                             Text(hour.hourText)
                                 .font(.caption2)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Theme.textSecondary)
                             Image(systemName: hour.condition.systemImage)
                                 .font(.system(size: 22))
-                                .foregroundStyle(.blue)
+                                .foregroundStyle(Theme.accent)
                                 .symbolRenderingMode(.hierarchical)
                             Text("\(Int(hour.temperature.rounded()))°")
                                 .font(.subheadline.bold())
+                                .foregroundStyle(.white)
                             if hour.precipProb > 0 {
                                 Text("\(hour.precipProb)%")
                                     .font(.caption2)
-                                    .foregroundStyle(.blue)
+                                    .foregroundStyle(Theme.accent)
                             }
                         }
                         .padding(.vertical, 8)
@@ -197,8 +200,7 @@ struct WeatherView: View {
                 .padding(.bottom, 16)
             }
         }
-        .background(Color(.secondarySystemGroupedBackground),
-                    in: RoundedRectangle(cornerRadius: 16))
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: 16))
     }
 
     // MARK: - 7-Day Forecast
@@ -207,7 +209,7 @@ struct WeatherView: View {
         VStack(alignment: .leading, spacing: 0) {
             Label(lang.weatherDaily, systemImage: "calendar")
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
                 .padding(.horizontal, 16)
                 .padding(.top, 16)
                 .padding(.bottom, 12)
@@ -217,27 +219,29 @@ struct WeatherView: View {
                     HStack {
                         Text(idx == 0 ? lang.weatherToday : day.dayName)
                             .font(.subheadline)
+                            .foregroundStyle(.white)
                             .frame(width: 52, alignment: .leading)
 
                         Image(systemName: day.condition.systemImage)
                             .font(.system(size: 18))
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(Theme.accent)
                             .symbolRenderingMode(.hierarchical)
                             .frame(width: 28)
 
                         Text(day.condition.displayName)
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.textSecondary)
 
                         Spacer()
 
                         HStack(spacing: 8) {
                             Text("\(Int(day.minTemp.rounded()))°")
                                 .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Theme.textSecondary)
                                 .frame(width: 36, alignment: .trailing)
                             Text("\(Int(day.maxTemp.rounded()))°")
                                 .font(.subheadline.bold())
+                                .foregroundStyle(.white)
                                 .frame(width: 36, alignment: .trailing)
                         }
                     }
@@ -245,15 +249,16 @@ struct WeatherView: View {
                     .padding(.vertical, 11)
 
                     if idx < weatherVM.dailyForecasts.count - 1 {
-                        Divider().padding(.leading, 16)
+                        Divider()
+                            .overlay(Theme.textTertiary.opacity(0.3))
+                            .padding(.leading, 16)
                     }
                 }
             }
 
             Spacer().frame(height: 16)
         }
-        .background(Color(.secondarySystemGroupedBackground),
-                    in: RoundedRectangle(cornerRadius: 16))
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: 16))
     }
 
     // MARK: - Details Grid
@@ -262,11 +267,11 @@ struct WeatherView: View {
         let cols = [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)]
         return LazyVGrid(columns: cols, spacing: 14) {
             detailCell(icon: "thermometer.medium",
-                       iconBg: .red,
+                       iconBg: Theme.negative,
                        title: lang.weatherFeelsLike,
                        value: weather.feelsLikeText)
             detailCell(icon: "humidity.fill",
-                       iconBg: .blue,
+                       iconBg: Color(red: 0.25, green: 0.55, blue: 0.95),
                        title: lang.weatherHumidity,
                        value: "\(weather.humidity)%")
             detailCell(icon: "wind",
@@ -294,46 +299,45 @@ struct WeatherView: View {
             }
             Text(title)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
             Text(value)
                 .font(.system(size: 22, weight: .bold, design: .rounded))
-                .foregroundStyle(.primary)
+                .foregroundStyle(.white)
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemGroupedBackground),
-                    in: RoundedRectangle(cornerRadius: 16))
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: 16))
     }
 
     // MARK: - Gradient Helpers
 
     private func gradientColors(for condition: WeatherCondition, isDay: Bool) -> [Color] {
         if !isDay {
-            return [Color(red: 0.1, green: 0.1, blue: 0.30),
-                    Color(red: 0.05, green: 0.05, blue: 0.20)]
+            return [Color(red: 0.08, green: 0.08, blue: 0.22),
+                    Color(red: 0.04, green: 0.04, blue: 0.14)]
         }
         switch condition {
         case .clearSky, .mainlyClear:
-            return [Color(red: 0.25, green: 0.65, blue: 1.0),
-                    Color(red: 0.10, green: 0.45, blue: 0.85)]
+            return [Color(red: 0.15, green: 0.50, blue: 0.90),
+                    Color(red: 0.08, green: 0.35, blue: 0.70)]
         case .partlyCloudy:
-            return [Color(red: 0.40, green: 0.65, blue: 0.95),
-                    Color(red: 0.30, green: 0.50, blue: 0.80)]
+            return [Color(red: 0.25, green: 0.48, blue: 0.80),
+                    Color(red: 0.18, green: 0.35, blue: 0.65)]
         case .overcast, .fog:
-            return [Color(red: 0.50, green: 0.50, blue: 0.60),
-                    Color(red: 0.35, green: 0.35, blue: 0.45)]
+            return [Color(red: 0.30, green: 0.30, blue: 0.38),
+                    Color(red: 0.20, green: 0.20, blue: 0.28)]
         case .drizzle, .rain:
-            return [Color(red: 0.30, green: 0.40, blue: 0.60),
-                    Color(red: 0.20, green: 0.30, blue: 0.50)]
+            return [Color(red: 0.18, green: 0.25, blue: 0.42),
+                    Color(red: 0.12, green: 0.18, blue: 0.32)]
         case .heavyRain, .thunderstorm:
-            return [Color(red: 0.20, green: 0.25, blue: 0.40),
-                    Color(red: 0.10, green: 0.15, blue: 0.30)]
+            return [Color(red: 0.12, green: 0.15, blue: 0.28),
+                    Color(red: 0.06, green: 0.08, blue: 0.18)]
         case .snow:
-            return [Color(red: 0.65, green: 0.80, blue: 0.95),
-                    Color(red: 0.50, green: 0.65, blue: 0.85)]
+            return [Color(red: 0.40, green: 0.55, blue: 0.70),
+                    Color(red: 0.30, green: 0.42, blue: 0.58)]
         case .unknown:
-            return [Color(red: 0.45, green: 0.55, blue: 0.65),
-                    Color(red: 0.35, green: 0.45, blue: 0.55)]
+            return [Color(red: 0.28, green: 0.32, blue: 0.40),
+                    Color(red: 0.18, green: 0.22, blue: 0.30)]
         }
     }
 }

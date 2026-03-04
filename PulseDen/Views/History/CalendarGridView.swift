@@ -83,7 +83,7 @@ struct CalendarGridView: View {
 
     private func cellBackground(completed: Bool, isMissed: Bool, isFuture: Bool, scheduled: Bool) -> Color {
         if completed { return accentColor }
-        if isMissed { return Color(.systemGray5) }
+        if isMissed { return Theme.cardElevated }
         return Color.clear
     }
 

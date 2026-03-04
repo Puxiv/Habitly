@@ -12,23 +12,29 @@ struct ContentView: View {
                 }
                 .tag(0)
 
-            HabitsListView()
-                .tabItem {
-                    Label(lang.habitsTab, systemImage: "checkmark.seal.fill")
-                }
-                .tag(1)
+            if lang.moduleHabits {
+                HabitsListView()
+                    .tabItem {
+                        Label(lang.habitsTab, systemImage: "checkmark.seal.fill")
+                    }
+                    .tag(1)
+            }
 
-            RemindersListView()
-                .tabItem {
-                    Label(lang.remindersTab, systemImage: "bell.badge")
-                }
-                .tag(2)
+            if lang.moduleReminders {
+                RemindersListView()
+                    .tabItem {
+                        Label(lang.remindersTab, systemImage: "bell.badge")
+                    }
+                    .tag(2)
+            }
 
-            StuffListView()
-                .tabItem {
-                    Label(lang.stuffTab, systemImage: "bookmark.fill")
-                }
-                .tag(3)
+            if lang.moduleStuff {
+                StuffListView()
+                    .tabItem {
+                        Label(lang.stuffTab, systemImage: "bookmark.fill")
+                    }
+                    .tag(3)
+            }
 
             ChatView()
                 .tabItem {
@@ -36,23 +42,29 @@ struct ContentView: View {
                 }
                 .tag(4)
 
-            HealthView()
-                .tabItem {
-                    Label(lang.healthTab, systemImage: "heart.fill")
-                }
-                .tag(5)
+            if lang.moduleHealth {
+                HealthView()
+                    .tabItem {
+                        Label(lang.healthTab, systemImage: "heart.fill")
+                    }
+                    .tag(5)
+            }
 
-            StocksView()
-                .tabItem {
-                    Label(lang.stocksTab, systemImage: "chart.line.uptrend.xyaxis")
-                }
-                .tag(6)
+            if lang.moduleStocks {
+                StocksView()
+                    .tabItem {
+                        Label(lang.stocksTab, systemImage: "chart.line.uptrend.xyaxis")
+                    }
+                    .tag(6)
+            }
 
-            NewsView()
-                .tabItem {
-                    Label(lang.newsTab, systemImage: "newspaper.fill")
-                }
-                .tag(7)
+            if lang.moduleNews {
+                NewsView()
+                    .tabItem {
+                        Label(lang.newsTab, systemImage: "newspaper.fill")
+                    }
+                    .tag(7)
+            }
 
             WeatherView()
                 .tabItem {
@@ -66,6 +78,7 @@ struct ContentView: View {
                 }
                 .tag(9)
         }
+        .tint(Theme.accent)
     }
 }
 

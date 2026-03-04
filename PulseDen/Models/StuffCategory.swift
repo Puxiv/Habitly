@@ -27,6 +27,8 @@ enum StuffCategory: String, Codable, CaseIterable {
             case .bulgarian:    return "Рецепта"
             case .northwestern: return "Рецепта"
             case .shopluk:      return "Рецепта"
+            case .plovdiv:      return "Рецепта"
+            case .burgas:       return "Рецепта"
             }
         case .article:
             switch language {
@@ -34,6 +36,8 @@ enum StuffCategory: String, Codable, CaseIterable {
             case .bulgarian:    return "Статия"
             case .northwestern: return "Статия"
             case .shopluk:      return "Статия"
+            case .plovdiv:      return "Статия"
+            case .burgas:       return "Статия"
             }
         case .idea:
             switch language {
@@ -41,6 +45,8 @@ enum StuffCategory: String, Codable, CaseIterable {
             case .bulgarian:    return "Идея"
             case .northwestern: return "Идея"
             case .shopluk:      return "Идея"
+            case .plovdiv:      return "Идея"
+            case .burgas:       return "Идея"
             }
         case .place:
             switch language {
@@ -48,6 +54,8 @@ enum StuffCategory: String, Codable, CaseIterable {
             case .bulgarian:    return "Място"
             case .northwestern: return "Место"
             case .shopluk:      return "Место"
+            case .plovdiv:      return "М'асто"
+            case .burgas:       return "Место"
             }
         case .product:
             switch language {
@@ -55,6 +63,8 @@ enum StuffCategory: String, Codable, CaseIterable {
             case .bulgarian:    return "Продукт"
             case .northwestern: return "Продукт"
             case .shopluk:      return "Продукт"
+            case .plovdiv:      return "Продукт"
+            case .burgas:       return "Продукт"
             }
         case .other:
             switch language {
@@ -62,6 +72,8 @@ enum StuffCategory: String, Codable, CaseIterable {
             case .bulgarian:    return "Друго"
             case .northwestern: return "Друго"
             case .shopluk:      return "Друго"
+            case .plovdiv:      return "Друго"
+            case .burgas:       return "Друго"
             }
         }
     }

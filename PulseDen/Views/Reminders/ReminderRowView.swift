@@ -6,9 +6,9 @@ struct ReminderRowView: View {
 
     private var stateColor: Color {
         switch reminder.state {
-        case .upcoming:  return .blue
-        case .overdue:   return .red
-        case .completed: return .green
+        case .upcoming:  return Theme.accent
+        case .overdue:   return Theme.negative
+        case .completed: return Theme.accent.opacity(0.6)
         }
     }
 
@@ -51,13 +51,13 @@ struct ReminderRowView: View {
             switch reminder.state {
             case .upcoming:
                 Image(systemName: "clock")
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(Theme.accent)
             case .overdue:
                 Image(systemName: "exclamationmark.circle.fill")
-                    .foregroundStyle(.red)
+                    .foregroundStyle(Theme.negative)
             case .completed:
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(.green)
+                    .foregroundStyle(Theme.accent)
             }
         }
         .padding(.vertical, 4)

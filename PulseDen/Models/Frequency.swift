@@ -24,6 +24,8 @@ enum Frequency: Codable, Equatable {
             case .bulgarian:    return "Всеки ден"
             case .northwestern: return "Секи ден"
             case .shopluk:      return "Секи ден"
+            case .plovdiv:      return "Секи ден"
+            case .burgas:       return "Секи ден"
             }
         case .weekdays(let days):
             if days.isEmpty {
@@ -32,6 +34,8 @@ enum Frequency: Codable, Equatable {
                 case .bulgarian:    return "Няма избрани дни"
                 case .northwestern: return "Нема избрани дни"
                 case .shopluk:      return "Нема избрани дни"
+                case .plovdiv:      return "Нема избрани дни"
+                case .burgas:       return "Нема избрани дни"
                 }
             }
             var cal = Calendar.current

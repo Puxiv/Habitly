@@ -14,7 +14,7 @@ struct NewsView: View {
                     newsContent
                 }
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Theme.background)
             .navigationTitle(lang.newsTitle)
             .refreshable {
                 await newsVM.refresh()
@@ -35,16 +35,14 @@ struct NewsView: View {
 
     private var noApiKeyState: some View {
         VStack(spacing: 20) {
-            Image(systemName: "newspaper.fill")
-                .font(.system(size: 56))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [Color(red: 0.25, green: 0.48, blue: 0.85),
-                                 Color(red: 0.15, green: 0.35, blue: 0.70)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+            ZStack {
+                Circle()
+                    .fill(Theme.accent.opacity(0.12))
+                    .frame(width: 100, height: 100)
+                Image(systemName: "newspaper.fill")
+                    .font(.system(size: 44))
+                    .foregroundStyle(Theme.accent)
+            }
 
             Text(lang.newsEmpty)
                 .font(.title3.weight(.medium))
@@ -53,7 +51,7 @@ struct NewsView: View {
 
             Text("gnews.io")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
         }
         .padding(.top, 60)
     }
@@ -66,6 +64,7 @@ struct NewsView: View {
             VStack {
                 Spacer()
                 ProgressView()
+                    .tint(Theme.accent)
                     .scaleEffect(1.2)
                 Spacer()
             }
@@ -74,14 +73,12 @@ struct NewsView: View {
         } else {
             ScrollView {
                 VStack(spacing: 24) {
-                    // World News
                     newsSection(
                         title: lang.newsWorldTitle,
                         icon: "globe",
                         articles: newsVM.worldNews
                     )
 
-                    // Bulgarian News
                     newsSection(
                         title: lang.newsBulgarianTitle,
                         icon: "flag.fill",
@@ -99,11 +96,10 @@ struct NewsView: View {
 
     private func newsSection(title: String, icon: String, articles: [NewsArticle]) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Section header
             HStack(spacing: 8) {
                 Image(systemName: icon)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Color(red: 0.25, green: 0.48, blue: 0.85))
+                    .foregroundStyle(Theme.accent)
                 Text(title)
                     .font(.title3.weight(.bold))
             }
@@ -112,7 +108,7 @@ struct NewsView: View {
             if articles.isEmpty {
                 Text(lang.newsNoArticles)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.textSecondary)
                     .padding(.vertical, 20)
                     .frame(maxWidth: .infinity)
             } else {
@@ -132,18 +128,17 @@ struct NewsView: View {
             }
         } label: {
             HStack(alignment: .top, spacing: 12) {
-                // Text content
                 VStack(alignment: .leading, spacing: 6) {
                     Text(article.title)
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(.white)
                         .lineLimit(3)
                         .multilineTextAlignment(.leading)
 
                     if !article.description.isEmpty {
                         Text(article.description)
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.textSecondary)
                             .lineLimit(2)
                             .multilineTextAlignment(.leading)
                     }
@@ -152,20 +147,19 @@ struct NewsView: View {
                         if !article.sourceName.isEmpty {
                             Text(article.sourceName)
                                 .font(.caption2.weight(.medium))
-                                .foregroundStyle(Color(red: 0.25, green: 0.48, blue: 0.85))
+                                .foregroundStyle(Theme.accent)
                         }
                         Text("·")
                             .font(.caption2)
-                            .foregroundStyle(.tertiary)
+                            .foregroundStyle(Theme.textTertiary)
                         Text(article.timeAgoText)
                             .font(.caption2)
-                            .foregroundStyle(.tertiary)
+                            .foregroundStyle(Theme.textTertiary)
                     }
                 }
 
                 Spacer(minLength: 0)
 
-                // Thumbnail
                 if let imageURL = article.imageURL, let url = URL(string: imageURL) {
                     AsyncImage(url: url) { phase in
                         switch phase {
@@ -179,6 +173,7 @@ struct NewsView: View {
                             imagePlaceholder
                         case .empty:
                             ProgressView()
+                                .tint(Theme.accent)
                                 .frame(width: 72, height: 72)
                         @unknown default:
                             imagePlaceholder
@@ -187,19 +182,19 @@ struct NewsView: View {
                 }
             }
             .padding(14)
-            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+            .background(Theme.card, in: RoundedRectangle(cornerRadius: 14))
         }
         .buttonStyle(.plain)
     }
 
     private var imagePlaceholder: some View {
         RoundedRectangle(cornerRadius: 10)
-            .fill(Color(.tertiarySystemGroupedBackground))
+            .fill(Theme.cardElevated)
             .frame(width: 72, height: 72)
             .overlay {
                 Image(systemName: "newspaper")
                     .font(.title3)
-                    .foregroundStyle(.quaternary)
+                    .foregroundStyle(Theme.textTertiary)
             }
     }
 
@@ -212,14 +207,14 @@ struct NewsView: View {
                 .foregroundStyle(.orange)
             Text(message)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
             Button(lang.healthRetry) {
                 Task { await newsVM.refresh() }
             }
             .buttonStyle(.borderedProminent)
-            .tint(Color(red: 0.25, green: 0.48, blue: 0.85))
+            .tint(Theme.accent)
         }
         .padding(.top, 60)
     }

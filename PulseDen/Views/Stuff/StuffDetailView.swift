@@ -34,7 +34,7 @@ struct StuffDetailView: View {
                     }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
-                    .background(Color(.tertiarySystemFill), in: Capsule())
+                    .background(Theme.cardElevated, in: Capsule())
 
                     // Star rating
                     HStack(spacing: 2) {
@@ -57,7 +57,7 @@ struct StuffDetailView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(16)
-                    .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+                    .background(Theme.card, in: RoundedRectangle(cornerRadius: 12))
                 }
 
                 // Image

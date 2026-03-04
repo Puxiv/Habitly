@@ -6,8 +6,44 @@ struct SettingsView: View {
     @State private var gnewsApiKey: String = UserDefaults.standard.string(forKey: "gnews_api_key") ?? ""
 
     var body: some View {
+        @Bindable var langBinding = lang
         NavigationStack {
             Form {
+                // AI Assistant Name & Voice
+                Section {
+                    TextField("Pucho", text: $langBinding.aiName)
+                        .autocorrectionDisabled()
+                    Toggle(lang.autoSpeakLabel, isOn: $langBinding.autoSpeak)
+                } header: {
+                    Text(lang.aiNameLabel)
+                } footer: {
+                    Text(lang.t("Give your AI sidekick a custom name. Toggle voice to hear responses read aloud.",
+                                "Дай на AI помощника си име по избор. Включи гласа, за да чуеш отговорите на глас.",
+                                "Тури на помощника си име. Пусни гласа да чуеш отговорите.",
+                                "Тури на помощника си име. Пусни гласа да чуеш отговорите.",
+                                "Тури име на помощника. Пусни гласа да чуеш отговорите бе.",
+                                "Тури име на помощника. Пусни гласа да чуеш отговорите батка."))
+                }
+
+                // Module Toggles
+                Section {
+                    Toggle(lang.habitsTab, isOn: $langBinding.moduleHabits)
+                    Toggle(lang.remindersTab, isOn: $langBinding.moduleReminders)
+                    Toggle(lang.stuffTab, isOn: $langBinding.moduleStuff)
+                    Toggle(lang.healthTab, isOn: $langBinding.moduleHealth)
+                    Toggle(lang.stocksTab, isOn: $langBinding.moduleStocks)
+                    Toggle(lang.newsTab, isOn: $langBinding.moduleNews)
+                } header: {
+                    Text(lang.modulesLabel)
+                } footer: {
+                    Text(lang.t("Disabled modules are hidden from Dashboard, tabs, and AI chat.",
+                                "Изключените модули са скрити от Табло, табове и AI чат.",
+                                "Изключените модули са скрити от Таблото, табовете и AI чата.",
+                                "Изключените модули са скрити от Таблото, табовете и AI чата.",
+                                "Изключените модули са скрити от Таблото, табовете и AI чата.",
+                                "Изключените модули са скрити от Таблото, табовете и AI чата."))
+                }
+
                 Section {
                     ForEach(AppLanguage.allCases, id: \.self) { language in
                         Button {

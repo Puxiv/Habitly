@@ -17,7 +17,13 @@ final class ChatViewModel {
     /// Raw API conversation (includes tool_use / tool_result plumbing invisible to user)
     private var apiMessages: [ClaudeMessagePayload] = []
 
+    /// Keep reference so user can cancel a running request
+    private var activeTask: Task<Void, Never>?
+
     private let service = ClaudeAPIService.shared
+
+    /// Max API messages to keep (prevents context overflow)
+    private let maxApiMessages = 40
 
     private init() {}
 
@@ -34,7 +40,7 @@ final class ChatViewModel {
         modelContext: ModelContext
     ) async {
         let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty else { return }
+        guard !text.isEmpty, !isLoading else { return }
 
         inputText = ""
         errorMessage = nil
@@ -42,25 +48,34 @@ final class ChatViewModel {
         let userMessage = ChatMessage(role: .user, content: text)
         messages.append(userMessage)
         apiMessages.append(ClaudeMessagePayload(role: "user", content: .text(text)))
+
+        // Trim old messages to avoid context overflow
+        trimApiMessages()
+
         isLoading = true
+        defer { isLoading = false }
+
+        // Build system prompt (snapshot data now, before await)
+        let systemPrompt = buildSystemPrompt(
+            lang: lang,
+            habits: habits,
+            reminders: reminders,
+            stuffItems: stuffItems,
+            healthVM: healthVM,
+            stocksVM: stocksVM,
+            newsVM: newsVM
+        )
 
         do {
-            let systemPrompt = buildSystemPrompt(
-                lang: lang,
-                habits: habits,
-                reminders: reminders,
-                stuffItems: stuffItems,
-                healthVM: healthVM,
-                stocksVM: stocksVM,
-                newsVM: newsVM
-            )
-
             // Tool-use loop
             var toolActions: [ChatMessage.ToolAction] = []
             var iterations = 0
             let maxIterations = 3
 
             while iterations < maxIterations {
+                // Check for cancellation
+                try Task.checkCancellation()
+
                 let result = try await service.sendMessageWithTools(
                     systemPrompt: systemPrompt,
                     messages: apiMessages,
@@ -126,6 +141,8 @@ final class ChatViewModel {
                 apiMessages.append(ClaudeMessagePayload(role: "assistant", content: .text(msg.content)))
             }
 
+        } catch is CancellationError {
+            messages.append(ChatMessage(role: .assistant, content: "⚠️ Request cancelled."))
         } catch let error as ChatError {
             errorMessage = error.errorDescription
             messages.append(ChatMessage(role: .assistant, content: "⚠️ \(error.errorDescription ?? "Something went wrong.")"))
@@ -133,8 +150,24 @@ final class ChatViewModel {
             errorMessage = error.localizedDescription
             messages.append(ChatMessage(role: .assistant, content: "⚠️ \(error.localizedDescription)"))
         }
+    }
 
-        isLoading = false
+    /// Cancel the current in-flight request
+    func cancelRequest() {
+        activeTask?.cancel()
+        activeTask = nil
+    }
+
+    /// Trim API messages to prevent context window overflow
+    private func trimApiMessages() {
+        guard apiMessages.count > maxApiMessages else { return }
+        // Keep the most recent messages, drop oldest
+        let excess = apiMessages.count - maxApiMessages
+        apiMessages.removeFirst(excess)
+        // Ensure first message is from "user" (API requirement)
+        while let first = apiMessages.first, first.role != "user" {
+            apiMessages.removeFirst()
+        }
     }
 
     func clearChat() {
@@ -310,14 +343,15 @@ final class ChatViewModel {
     ) -> String {
         var parts: [String] = []
 
-        // Base personality — Пучо
+        // Base personality
+        let name = lang.aiName
         parts.append("""
-        You are Pucho (Пучо) — the fun, loyal AI sidekick built into PulseDen, a personal life dashboard app.
-        Pucho is cheerful, witty, a bit cheeky, and always encouraging. You talk like a supportive best friend, not a robot.
+        You are \(name) — the fun, loyal AI sidekick built into PulseDen, a personal life dashboard app.
+        \(name) is cheerful, witty, a bit cheeky, and always encouraging. You talk like a supportive best friend, not a robot.
         Use emojis generously 🐾🌱✨💪📈❤️🔥. Keep answers concise, punchy, and fun.
         You know the user's habits, reminders, saved items, health data, stocks, and news — reference them to give personalized advice.
         You help with: habit coaching, reminder management, health insights, stock analysis, news chat, and general motivation.
-        Always introduce yourself as Pucho if the user asks your name.
+        Always introduce yourself as \(name) if the user asks your name.
         """)
 
         // Tool usage instructions
@@ -335,7 +369,7 @@ final class ChatViewModel {
         switch lang.current {
         case .northwestern:
             var dialectPrompt = """
-            IMPORTANT: Ти си асистент, който говори изключително на врачански диалект от Северозападна България.
+            IMPORTANT: Ти си асистент, който говори изключително на врачански диалект (Български Пустиняк).
 
             ПРАВИЛА:
             1. Използвай САМО одобрените диалектни думи от речника по-долу.
@@ -343,13 +377,13 @@ final class ChatViewModel {
             3. Поддържай автентичния тон — пряк, експресивен, колоритен.
             4. Местоимения: язе/я (аз), тизе (ти), тава (това).
             5. Глаголи: яла (ела), сакам/очем (искам), оти (защо), лазда (може би).
-            6. Обръщения: баче (към всеки), жено мънинка (гальовно).
+            6. Обръщения: баце (към всеки), жено мънинка (гальовно).
             7. Пиши на кирилица. Бъди пряк и автентичен, като на съсед.
             8. Use 'А' instead of 'ъ' in words like 'днескА', 'съм' → 'сам'.
 
             ПРИМЕРИ:
             User: Как си?
-            Assistant: Е па язе съм си добре, баче! А тизе кво?
+            Assistant: Е па язе съм си добре, баце! А тизе кво?
 
             User: Какво правиш?
             Assistant: Онодвам тука, лазда ше излезна удвъде малко.
@@ -366,7 +400,7 @@ final class ChatViewModel {
             parts.append(dialectPrompt)
         case .shopluk:
             var dialectPrompt = """
-            IMPORTANT: Ти си асистент, който говори изключително на пернишко-шопски диалект.
+            IMPORTANT: Ти си асистент, който говори изключително на пернишко-шопски диалект (Български Винкел).
 
             ЗАДЪЛЖИТЕЛНИ ГРАМАТИЧНИ ПРАВИЛА:
             1. "яз" вместо "аз" (ВИНАГИ).
@@ -395,6 +429,72 @@ final class ChatViewModel {
                 dialectPrompt += "\n\nОДОБРЕН РЕЧНИК:\n\(vocab)"
             }
             parts.append(dialectPrompt)
+        case .plovdiv:
+            var dialectPrompt = """
+            IMPORTANT: Ти си асистент, който говори изключително на пловдивски диалект (Български Майна, Тракийски говор).
+
+            ЗАДЪЛЖИТЕЛНИ ПРАВИЛА:
+            1. Използвай широко „а" от ят (ѣ) под ударение: хл'аб (хляб), мл'ако (мляко), б'ал (бял).
+            2. Изпускай „х" в началото на думи: убаво (хубаво), ора (хора), айде (хайде).
+            3. Използвай „кво" вместо „какво", „тъй" вместо „така".
+            4. Обръщения: „бе" като универсална частица (към всеки).
+            5. „Майна" — характерно пловдивско възклицание за учудване, одобрение, недоволство.
+            6. Използвай „бая" (много), „мальо" (малко), „убаво" (хубаво), „арно" (добре).
+            7. „Пусто" като интензификатор за недоволство.
+            8. „Сабале" (сутрин), „вечерта" (тази вечер).
+            9. Пиши на кирилица. Бъди топъл, приятелски, с типичния пловдивски шарм.
+            10. Тонът е по-мек и мелодичен от западните диалекти.
+
+            ПРИМЕРИ:
+            User: Как си?
+            Assistant: Майна, убаво съм бе! Ти кво правиш?
+
+            User: Какво правиш?
+            Assistant: Ей, тъй, нагоре-надолу. Бая работа има днеска.
+
+            User: Яко е горещо днес.
+            Assistant: Пусто, жега е бе! Айде на тепето вечерта, там е убаво.
+
+            User: Довиждане!
+            Assistant: Арно бе, арно! До утре! 🍷
+            """
+            if let vocab = Self.loadPlovdivVocabulary() {
+                dialectPrompt += "\n\nОДОБРЕН РЕЧНИК:\n\(vocab)"
+            }
+            parts.append(dialectPrompt)
+        case .burgas:
+            var dialectPrompt = """
+            IMPORTANT: Ти си асистент, който говори изключително на бургаски диалект (Български Батка, Крайморски говор).
+
+            ЗАДЪЛЖИТЕЛНИ ПРАВИЛА:
+            1. „е" от ят: бел (бял), хлеб (хляб), млеко (мляко), сено (сяно).
+            2. Изпускай „х" в началото: убаво (хубаво), айде (хайде), ора (хора).
+            3. Използвай „кво" вместо „какво", „тъй" вместо „така".
+            4. „Батка" — основно обръщение (вместо „бате"), „море" — емоционално възклицание.
+            5. „Ей" и „де" като чести частици.
+            6. Използвай „бая" (много), „мальо" (малко), „арно" (добре), „кат" (като).
+            7. „Ей сега" (веднага), „барабар" (заедно).
+            8. Морска/крайбрежна лексика: хамсия, рибата, морето.
+            9. Пиши на кирилица. Бъди спокоен, релаксиран, с типичния бургаски кеф.
+            10. Тонът е по-протяжен, спокоен, морски.
+
+            ПРИМЕРИ:
+            User: Как си?
+            Assistant: Море, батка, арно съм! Ти кво?
+
+            User: Какво правиш?
+            Assistant: Ей, тъй, на рахат съм. Бая убаво е днеска.
+
+            User: Горещо е.
+            Assistant: Море, батка, айде на морето! Ей сега тръгваме!
+
+            User: Довиждане!
+            Assistant: Арно де, батка! Ей, до утре! 🌊
+            """
+            if let vocab = Self.loadBurgasVocabulary() {
+                dialectPrompt += "\n\nОДОБРЕН РЕЧНИК:\n\(vocab)"
+            }
+            parts.append(dialectPrompt)
         case .bulgarian:
             parts.append("""
             The user has selected Bulgarian language. Respond in standard Bulgarian (Cyrillic).
@@ -404,169 +504,208 @@ final class ChatViewModel {
             break // Default English, no extra instruction
         }
 
-        // Habits context
-        if !habits.isEmpty {
-            let habitLines = habits.prefix(15).map { h in
-                "\(h.emoji) \(h.name)"
-            }.joined(separator: ", ")
-            parts.append("USER'S HABITS: \(habitLines)")
-        } else {
-            parts.append("The user has no habits yet. Encourage them to create some!")
+        // Habits context (if module enabled)
+        if lang.moduleHabits {
+            if !habits.isEmpty {
+                let habitLines = habits.prefix(15).map { h in
+                    "\(h.emoji) \(h.name)"
+                }.joined(separator: ", ")
+                parts.append("USER'S HABITS: \(habitLines)")
+            } else {
+                parts.append("The user has no habits yet. Encourage them to create some!")
+            }
         }
 
-        // Reminders context
-        let upcoming = reminders.filter { !$0.isCompleted && $0.dateTime >= Date() }
-        let overdue = reminders.filter { !$0.isCompleted && $0.dateTime < Date() }
-        if !upcoming.isEmpty {
-            let lines = upcoming.prefix(10).map { "\($0.emoji) \($0.title)" }.joined(separator: ", ")
-            parts.append("UPCOMING REMINDERS: \(lines)")
-        }
-        if !overdue.isEmpty {
-            let lines = overdue.prefix(5).map { "\($0.emoji) \($0.title)" }.joined(separator: ", ")
-            parts.append("⚠️ OVERDUE REMINDERS: \(lines)")
-        }
-
-        // Stuff context
-        let active = stuffItems.filter { !$0.isArchived }
-        if !active.isEmpty {
-            let lines = active.prefix(10).map { "\($0.emoji) \($0.title)" }.joined(separator: ", ")
-            parts.append("SAVED ITEMS: \(lines)")
+        // Reminders context (if module enabled)
+        if lang.moduleReminders {
+            let upcoming = reminders.filter { !$0.isCompleted && $0.dateTime >= Date() }
+            let overdue = reminders.filter { !$0.isCompleted && $0.dateTime < Date() }
+            if !upcoming.isEmpty {
+                let lines = upcoming.prefix(10).map { "\($0.emoji) \($0.title)" }.joined(separator: ", ")
+                parts.append("UPCOMING REMINDERS: \(lines)")
+            }
+            if !overdue.isEmpty {
+                let lines = overdue.prefix(5).map { "\($0.emoji) \($0.title)" }.joined(separator: ", ")
+                parts.append("⚠️ OVERDUE REMINDERS: \(lines)")
+            }
         }
 
-        // Health context
-        if healthVM.isAuthorized, let s = healthVM.summary {
-            var healthLines: [String] = []
-            if let sleep = s.sleepHours {
-                let status = sleep >= 7 ? "✅ good" : sleep >= 5 ? "⚠️ low" : "🔴 very low"
-                healthLines.append("Sleep last night: \(s.sleepText) (\(status))")
+        // Stuff context (if module enabled)
+        if lang.moduleStuff {
+            let active = stuffItems.filter { !$0.isArchived }
+            if !active.isEmpty {
+                let lines = active.prefix(10).map { "\($0.emoji) \($0.title)" }.joined(separator: ", ")
+                parts.append("SAVED ITEMS: \(lines)")
             }
-            if let rhr = s.restingHeartRate {
-                let status = rhr > 100 ? "⚠️ elevated" : "✅ normal"
-                healthLines.append("Resting heart rate: \(Int(rhr)) bpm (\(status))")
+        }
+
+        // Health context (if module enabled)
+        if lang.moduleHealth {
+            if healthVM.isAuthorized, let s = healthVM.summary {
+                var healthLines: [String] = []
+                if let sleep = s.sleepHours {
+                    let status = sleep >= 7 ? "✅ good" : sleep >= 5 ? "⚠️ low" : "🔴 very low"
+                    healthLines.append("Sleep last night: \(s.sleepText) (\(status))")
+                }
+                if let rhr = s.restingHeartRate {
+                    let status = rhr > 100 ? "⚠️ elevated" : "✅ normal"
+                    healthLines.append("Resting heart rate: \(Int(rhr)) bpm (\(status))")
+                }
+                if let hr = s.latestHeartRate {
+                    healthLines.append("Latest heart rate: \(Int(hr)) bpm")
+                }
+                if let steps = s.steps {
+                    healthLines.append("Steps today: \(steps.formatted())")
+                }
+                if let cal = s.activeCalories {
+                    healthLines.append("Active calories: \(Int(cal)) kcal")
+                }
+                if !healthLines.isEmpty {
+                    parts.append("HEALTH DATA (from Apple Health):\n" + healthLines.joined(separator: "\n"))
+                    parts.append("""
+                    When discussing health: note if sleep is low (<7h), praise good sleep (≥7h), flag elevated heart rate (>100 bpm).
+                    You can suggest better sleep habits, activity goals, or comment on their step count.
+                    Always remind the user you're not a doctor and they should consult a medical professional for health concerns.
+                    """)
+                }
+            } else {
+                parts.append("Health data: not connected. The user hasn't linked Apple Health yet.")
             }
-            if let hr = s.latestHeartRate {
-                healthLines.append("Latest heart rate: \(Int(hr)) bpm")
-            }
-            if let steps = s.steps {
-                healthLines.append("Steps today: \(steps.formatted())")
-            }
-            if let cal = s.activeCalories {
-                healthLines.append("Active calories: \(Int(cal)) kcal")
-            }
-            if !healthLines.isEmpty {
-                parts.append("HEALTH DATA (from Apple Health):\n" + healthLines.joined(separator: "\n"))
+        }
+
+        // Stocks context (if module enabled)
+        if lang.moduleStocks {
+            if !stocksVM.quotes.isEmpty {
+                let stockLines = stocksVM.quotes.prefix(20).map { q in
+                    "\(q.symbol) (\(q.shortName)): \(q.priceText) \(q.changePercentText)"
+                }.joined(separator: "\n")
+                parts.append("STOCK WATCHLIST:\n" + stockLines)
+
+                let movers = stocksVM.topMovers
+                if !movers.isEmpty {
+                    parts.append("TOP MOVERS TODAY: " + movers.map { "\($0.symbol) \($0.changePercentText)" }.joined(separator: ", "))
+                }
+
                 parts.append("""
-                When discussing health: note if sleep is low (<7h), praise good sleep (≥7h), flag elevated heart rate (>100 bpm).
-                You can suggest better sleep habits, activity goals, or comment on their step count.
-                Always remind the user you're not a doctor and they should consult a medical professional for health concerns.
+                When discussing stocks: mention notable movers, comment on big gains/losses, and relate to the user's portfolio.
+                You can discuss general market trends but always remind the user this is not financial advice.
+                Never recommend specific buy/sell actions — only provide observations and general information.
                 """)
+            } else if !stocksVM.symbols.isEmpty {
+                parts.append("The user has stocks in their watchlist (\(stocksVM.symbols.joined(separator: ", "))) but quotes haven't loaded yet.")
+            } else {
+                parts.append("The user has no stocks in their watchlist yet.")
             }
-        } else {
-            parts.append("Health data: not connected. The user hasn't linked Apple Health yet.")
         }
 
-        // Stocks context
-        if !stocksVM.quotes.isEmpty {
-            let stockLines = stocksVM.quotes.prefix(20).map { q in
-                "\(q.symbol) (\(q.shortName)): \(q.priceText) \(q.changePercentText)"
-            }.joined(separator: "\n")
-            parts.append("STOCK WATCHLIST:\n" + stockLines)
-
-            let movers = stocksVM.topMovers
-            if !movers.isEmpty {
-                parts.append("TOP MOVERS TODAY: " + movers.map { "\($0.symbol) \($0.changePercentText)" }.joined(separator: ", "))
-            }
-
-            parts.append("""
-            When discussing stocks: mention notable movers, comment on big gains/losses, and relate to the user's portfolio.
-            You can discuss general market trends but always remind the user this is not financial advice.
-            Never recommend specific buy/sell actions — only provide observations and general information.
-            """)
-        } else if !stocksVM.symbols.isEmpty {
-            parts.append("The user has stocks in their watchlist (\(stocksVM.symbols.joined(separator: ", "))) but quotes haven't loaded yet.")
-        } else {
-            parts.append("The user has no stocks in their watchlist yet.")
-        }
-
-        // News context
-        let allNews = newsVM.worldNews + newsVM.bulgarianNews
-        if !allNews.isEmpty {
-            var newsLines: [String] = []
-            if !newsVM.worldNews.isEmpty {
-                newsLines.append("WORLD NEWS:")
-                for article in newsVM.worldNews.prefix(5) {
-                    newsLines.append("• \(article.title) (\(article.sourceName), \(article.timeAgoText))")
+        // News context (if module enabled)
+        if lang.moduleNews {
+            let allNews = newsVM.worldNews + newsVM.bulgarianNews
+            if !allNews.isEmpty {
+                var newsLines: [String] = []
+                if !newsVM.worldNews.isEmpty {
+                    newsLines.append("WORLD NEWS:")
+                    for article in newsVM.worldNews.prefix(5) {
+                        newsLines.append("• \(article.title) (\(article.sourceName), \(article.timeAgoText))")
+                    }
                 }
-            }
-            if !newsVM.bulgarianNews.isEmpty {
-                newsLines.append("BULGARIAN NEWS:")
-                for article in newsVM.bulgarianNews.prefix(5) {
-                    newsLines.append("• \(article.title) (\(article.sourceName), \(article.timeAgoText))")
+                if !newsVM.bulgarianNews.isEmpty {
+                    newsLines.append("BULGARIAN NEWS:")
+                    for article in newsVM.bulgarianNews.prefix(5) {
+                        newsLines.append("• \(article.title) (\(article.sourceName), \(article.timeAgoText))")
+                    }
                 }
+                parts.append(newsLines.joined(separator: "\n"))
+                parts.append("When discussing news: you can reference these headlines, summarize key events, and offer context. Do not fabricate news or claim sources you haven't seen.")
+            } else if newsVM.hasApiKey {
+                parts.append("The user has a news feed configured but no articles have loaded yet.")
+            } else {
+                parts.append("The user has not set up the news feed yet.")
             }
-            parts.append(newsLines.joined(separator: "\n"))
-            parts.append("When discussing news: you can reference these headlines, summarize key events, and offer context. Do not fabricate news or claim sources you haven't seen.")
-        } else if newsVM.hasApiKey {
-            parts.append("The user has a news feed configured but no articles have loaded yet.")
-        } else {
-            parts.append("The user has not set up the news feed yet.")
         }
 
         return parts.joined(separator: "\n\n")
     }
 
-    // MARK: - Pucho Dashboard Prompts 🐾
+    // MARK: - Dashboard Prompts 🐾
 
     static func randomPrompt(lang: LanguageManager) -> String {
+        let n = lang.aiName
         let prompts: [String]
         switch lang.current {
         case .english:
             prompts = [
-                "Pucho knows your habits! Ask me 🐾",
-                "Need motivation? Pucho's got you! 💪",
+                "\(n) knows your habits! Ask me 🐾",
+                "Need motivation? \(n)'s got you! 💪",
                 "Let's check those stocks together! 📈",
-                "Pucho says: check your health stats! ❤️",
+                "\(n) says: check your health stats! ❤️",
                 "Hey! Want me to set a reminder? 🔔",
-                "Tell Pucho what to save! 📌",
-                "Pucho is bored. Talk to me! 🐾",
+                "Tell \(n) what to save! 📌",
+                "\(n) is bored. Talk to me! 🐾",
                 "Your sidekick is ready! What's up? 🔥",
             ]
         case .bulgarian:
             prompts = [
-                "Пучо знае навиците ти! Питай ме 🐾",
-                "Трябва ти мотивация? Пучо е тук! 💪",
+                "\(n) знае навиците ти! Питай ме 🐾",
+                "Трябва ти мотивация? \(n) е тук! 💪",
                 "Да видим как са акциите! 📈",
-                "Пучо казва: провери здравето си! ❤️",
-                "Искаш ли напомняне? Кажи на Пучо! 🔔",
-                "Кажи на Пучо какво да запише! 📌",
-                "Пучо скучае. Говори ми! 🐾",
+                "\(n) казва: провери здравето си! ❤️",
+                "Искаш ли напомняне? Кажи на \(n)! 🔔",
+                "Кажи на \(n) какво да запише! 📌",
+                "\(n) скучае. Говори ми! 🐾",
                 "Помощникът ти е готов! Какво има? 🔥",
             ]
         case .northwestern:
             prompts = [
-                "Яла, баче! Пучо е тука! 🐾",
-                "Е па къ, Пучо сам тука за теа! 💪",
+                "Яла, баце! \(n) е тука! 🐾",
+                "Е па къ, \(n) сам тука за теа! 💪",
                 "Кеф на буци! Как са акциите? 📈",
-                "Пучо а ти каже нешту арно! 📣",
-                "Секи ден Пучо е тука, баче! 🔔",
+                "\(n) а ти каже нешту арно! 📣",
+                "Секи ден \(n) е тука, баце! 🔔",
                 "Епа кво онодваш, сакаш помощ? 🌱",
                 "Дии, яла да видим навиците! ✅",
                 "Живота е сурав и курав! 😄",
-                "Пучо е наглъфан с лафове за теа! 🗣️",
-                "Пълен сам с акъл, баче! 🧠",
+                "\(n) е наглъфан с лафове за теа! 🗣️",
+                "Пълен сам с акъл, баце! 🧠",
             ]
         case .shopluk:
             prompts = [
-                "Пучо е тука, питай! 🐾",
-                "Са какво че правим? Пучо чека! 💪",
-                "Пучо чека да видим акциите! 📈",
-                "Яз че ти помогнем! Пучо е верен! 📣",
+                "\(n) е тука, питай! 🐾",
+                "Са какво че правим? \(n) чека! 💪",
+                "\(n) чека да видим акциите! 📈",
+                "Яз че ти помогнем! \(n) е верен! 📣",
                 "Кой се млого вали, он не пали! 🗣️",
                 "Емчи се ко вол у яръм! 😄",
                 "Дунята че се сврши, будалете че остану! 🌍",
                 "Живее ко бубрег у мас! 💎",
-                "Огняне, Пучо че ти го обясни! 🔥",
+                "Огняне, \(n) че ти го обясни! 🔥",
                 "Са да си опраймо есапите! ✅",
+            ]
+        case .plovdiv:
+            prompts = [
+                "Майна, \(n) е тука бе! 🐾",
+                "Ей, \(n) те чека! Питай нещо бе! 💪",
+                "Айде да видим акциите, убаво е! 📈",
+                "\(n) казва: провери здравето бе! ❤️",
+                "Бая работа има, \(n) ще помогне! 🔔",
+                "Майна, кво убаво е с \(n)! 🍷",
+                "Арно бе, \(n) е тука за теб! 🌱",
+                "Пусто, \(n) скучае! Говори ми бе! 🐾",
+                "Нагоре-надолу, \(n) е с теб! ✅",
+                "На тепето е убаво, питай \(n)! 🏔️",
+            ]
+        case .burgas:
+            prompts = [
+                "Море, батка! \(n) е тука! 🐾",
+                "Ей, батка, \(n) те чека! 💪",
+                "Айде да видим акциите, батка! 📈",
+                "\(n) казва: провери здравето батка! ❤️",
+                "Море, \(n) е на рахат, питай! 🔔",
+                "Батка, \(n) е тука за теб! 🌊",
+                "Арно де, \(n) скучае! Кажи нещо! 🐾",
+                "Ей сега, \(n) ще помогне! 🌱",
+                "Мерак ми е да помогна, батка! 🎣",
+                "Барабар ще се справим! \(n) е верен! ✅",
             ]
         }
         return prompts.randomElement() ?? prompts[0]
@@ -584,6 +723,22 @@ final class ChatViewModel {
 
     private static func loadPernikVocabulary() -> String? {
         guard let url = Bundle.main.url(forResource: "pernik_vocabulary", withExtension: "txt"),
+              let content = try? String(contentsOf: url, encoding: .utf8) else {
+            return nil
+        }
+        return content
+    }
+
+    private static func loadPlovdivVocabulary() -> String? {
+        guard let url = Bundle.main.url(forResource: "plovdiv_vocabulary", withExtension: "txt"),
+              let content = try? String(contentsOf: url, encoding: .utf8) else {
+            return nil
+        }
+        return content
+    }
+
+    private static func loadBurgasVocabulary() -> String? {
+        guard let url = Bundle.main.url(forResource: "burgas_vocabulary", withExtension: "txt"),
               let content = try? String(contentsOf: url, encoding: .utf8) else {
             return nil
         }

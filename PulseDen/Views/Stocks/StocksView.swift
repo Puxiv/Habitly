@@ -16,9 +16,8 @@ struct StocksView: View {
                         stocksList
                     }
                 }
-                .background(Color(.systemGroupedBackground))
+                .background(Theme.background)
 
-                // Search results overlay
                 if !stocksVM.searchResults.isEmpty && isSearchFocused {
                     searchOverlay
                 }
@@ -43,16 +42,14 @@ struct StocksView: View {
 
     private var emptyState: some View {
         VStack(spacing: 20) {
-            Image(systemName: "chart.line.uptrend.xyaxis")
-                .font(.system(size: 56))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [Color(red: 0.20, green: 0.78, blue: 0.45),
-                                 Color(red: 0.10, green: 0.60, blue: 0.35)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+            ZStack {
+                Circle()
+                    .fill(Theme.accent.opacity(0.12))
+                    .frame(width: 100, height: 100)
+                Image(systemName: "chart.line.uptrend.xyaxis")
+                    .font(.system(size: 44))
+                    .foregroundStyle(Theme.accent)
+            }
 
             Text(lang.stocksEmpty)
                 .font(.title3.weight(.medium))
@@ -73,6 +70,7 @@ struct StocksView: View {
 
                 if case .loading = stocksVM.loadState, stocksVM.quotes.isEmpty {
                     ProgressView()
+                        .tint(Theme.accent)
                         .padding(.top, 40)
                 } else if case .error(let msg) = stocksVM.loadState, stocksVM.quotes.isEmpty {
                     errorView(msg)
@@ -95,7 +93,7 @@ struct StocksView: View {
         HStack(spacing: 10) {
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.textSecondary)
                     .font(.subheadline)
 
                 TextField(lang.stocksSearchPlaceholder, text: $vm.searchQuery)
@@ -115,23 +113,27 @@ struct StocksView: View {
                         isSearchFocused = false
                     } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.textSecondary)
                     }
                 }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 9)
-            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+            .background(Theme.card, in: RoundedRectangle(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(Theme.textTertiary.opacity(0.3), lineWidth: 1)
+            )
 
             Button {
                 addManualSymbol()
             } label: {
                 Text(lang.stocksAdd)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.black)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
-                    .background(Color(red: 0.20, green: 0.78, blue: 0.45), in: RoundedRectangle(cornerRadius: 10))
+                    .background(Theme.accent, in: RoundedRectangle(cornerRadius: 10))
             }
             .disabled(stocksVM.searchQuery.trimmingCharacters(in: .whitespaces).isEmpty)
         }
@@ -149,7 +151,6 @@ struct StocksView: View {
 
     private var searchOverlay: some View {
         VStack(spacing: 0) {
-            // Spacer to push below search bar (~60pt for bar + padding)
             Spacer().frame(height: 56)
 
             ScrollView {
@@ -157,10 +158,11 @@ struct StocksView: View {
                     if stocksVM.isSearching {
                         HStack {
                             ProgressView()
+                                .tint(Theme.accent)
                                 .scaleEffect(0.8)
                             Text("Searching...")
                                 .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Theme.textSecondary)
                         }
                         .padding(.vertical, 12)
                     } else {
@@ -176,15 +178,20 @@ struct StocksView: View {
                             .buttonStyle(.plain)
 
                             if result.id != stocksVM.searchResults.last?.id {
-                                Divider().padding(.leading, 16)
+                                Divider()
+                                    .overlay(Theme.textTertiary.opacity(0.3))
+                                    .padding(.leading, 16)
                             }
                         }
                     }
                 }
             }
             .frame(maxHeight: 300)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
-            .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
+            .background(Theme.cardElevated, in: RoundedRectangle(cornerRadius: 14))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .strokeBorder(Theme.textTertiary.opacity(0.2), lineWidth: 1)
+            )
             .padding(.horizontal, 16)
         }
     }
@@ -194,10 +201,10 @@ struct StocksView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(result.symbol)
                     .font(.subheadline.weight(.bold))
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(.white)
                 Text(result.name)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.textSecondary)
                     .lineLimit(1)
             }
 
@@ -205,10 +212,10 @@ struct StocksView: View {
 
             Text(result.exchange)
                 .font(.caption2.weight(.medium))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
-                .background(Color(.tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 6))
+                .background(Theme.card, in: RoundedRectangle(cornerRadius: 6))
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
@@ -225,37 +232,34 @@ struct StocksView: View {
 
     private func stockRow(_ q: StockQuote) -> some View {
         HStack(spacing: 12) {
-            // Symbol + Name
             VStack(alignment: .leading, spacing: 3) {
                 Text(q.symbol)
                     .font(.headline.weight(.bold))
+                    .foregroundStyle(.white)
                 Text(q.shortName)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.textSecondary)
                     .lineLimit(1)
             }
 
             Spacer()
 
-            // Price
             Text(q.priceText)
                 .font(.system(.body, design: .rounded, weight: .semibold))
+                .foregroundStyle(.white)
 
-            // Change pill
             Text(q.changePercentText)
                 .font(.caption.weight(.bold))
                 .foregroundStyle(.white)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
                 .background(
-                    q.isPositive
-                        ? Color(red: 0.20, green: 0.72, blue: 0.40)
-                        : Color(red: 0.90, green: 0.25, blue: 0.25),
+                    q.isPositive ? Theme.positive : Theme.negative,
                     in: RoundedRectangle(cornerRadius: 8)
                 )
         }
         .padding(14)
-        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: 14))
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) {
                 stocksVM.removeSymbol(q.symbol)
@@ -281,13 +285,13 @@ struct StocksView: View {
                 .foregroundStyle(.orange)
             Text(message)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)
             Button(lang.healthRetry) {
                 Task { await stocksVM.refresh() }
             }
             .buttonStyle(.borderedProminent)
-            .tint(Color(red: 0.20, green: 0.78, blue: 0.45))
+            .tint(Theme.accent)
         }
         .padding(.top, 40)
     }

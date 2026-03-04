@@ -16,6 +16,8 @@ enum ReminderRepeat: Codable, Equatable {
             case .bulgarian:    return "Веднъж"
             case .northwestern: return "Еднъш"
             case .shopluk:      return "Еднъж"
+            case .plovdiv:      return "Веднъж"
+            case .burgas:       return "Веднъж"
             }
         case .daily:
             switch language {
@@ -23,6 +25,8 @@ enum ReminderRepeat: Codable, Equatable {
             case .bulgarian:    return "Всеки ден"
             case .northwestern: return "Секи ден"
             case .shopluk:      return "Секи ден"
+            case .plovdiv:      return "Секи ден"
+            case .burgas:       return "Секи ден"
             }
         case .weekly(let days):
             if days.isEmpty {
@@ -31,6 +35,8 @@ enum ReminderRepeat: Codable, Equatable {
                 case .bulgarian:    return "Няма избрани дни"
                 case .northwestern: return "Нема избрани дни"
                 case .shopluk:      return "Нема избрани дни"
+                case .plovdiv:      return "Нема избрани дни"
+                case .burgas:       return "Нема избрани дни"
                 }
             }
             var cal = Calendar.current
@@ -43,6 +49,8 @@ enum ReminderRepeat: Codable, Equatable {
             case .bulgarian:    return "Месечно (ден \(day))"
             case .northwestern: return "На месец (ден \(day))"
             case .shopluk:      return "На месец (ден \(day))"
+            case .plovdiv:      return "На месец (ден \(day))"
+            case .burgas:       return "На месец (ден \(day))"
             }
         }
     }
