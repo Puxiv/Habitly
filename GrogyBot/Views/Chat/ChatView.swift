@@ -16,6 +16,7 @@ struct ChatView: View {
 
     @FocusState private var isInputFocused: Bool
     @State private var speechManager = SpeechManager()
+    @State private var animatingActionType: ChatMessage.ToolAction.ActionType?
 
     var body: some View {
         NavigationStack {
@@ -42,20 +43,35 @@ struct ChatView: View {
                         .padding(.vertical, 12)
                     }
                     .onChange(of: chatVM.messages.count) {
-                        withAnimation(.easeOut(duration: 0.3)) {
-                            if chatVM.isLoading {
-                                proxy.scrollTo("loading", anchor: .bottom)
-                            } else if let last = chatVM.messages.last {
-                                proxy.scrollTo(last.id, anchor: .bottom)
-                            }
+                        // Scroll without withAnimation to avoid animation transaction
+                        // conflicts with the typing indicator's repeating animation.
+                        if chatVM.isLoading {
+                            proxy.scrollTo("loading", anchor: .bottom)
+                        } else if let last = chatVM.messages.last {
+                            proxy.scrollTo(last.id, anchor: .bottom)
                         }
                     }
-                    .onChange(of: chatVM.isLoading) {
-                        withAnimation(.easeOut(duration: 0.3)) {
-                            if chatVM.isLoading {
-                                proxy.scrollTo("loading", anchor: .bottom)
-                            } else if let last = chatVM.messages.last {
-                                proxy.scrollTo(last.id, anchor: .bottom)
+                    .onChange(of: chatVM.isLoading) { wasLoading, isLoading in
+                        // Scroll to latest
+                        if isLoading {
+                            proxy.scrollTo("loading", anchor: .bottom)
+                        } else if let last = chatVM.messages.last {
+                            proxy.scrollTo(last.id, anchor: .bottom)
+                        }
+                        // Auto-TTS: speak response when loading finishes (voice mode OR autoSpeak)
+                        if wasLoading && !isLoading,
+                           let last = chatVM.messages.last, last.role == .assistant,
+                           !last.content.isEmpty, !last.content.hasPrefix("⚠️") {
+                            if speechManager.voiceChatMode || lang.autoSpeak {
+                                speechManager.speak(last.content, locale: speechLocale, messageId: last.id)
+                            }
+                        }
+                        // Tool action animation: play video when a tool action is created
+                        if wasLoading && !isLoading,
+                           let last = chatVM.messages.last,
+                           let firstAction = last.toolActions.first {
+                            withAnimation(.spring(duration: 0.35)) {
+                                animatingActionType = firstAction.type
                             }
                         }
                     }
@@ -67,18 +83,31 @@ struct ChatView: View {
             }
             .background(Theme.background)
             .navigationTitle(lang.chatTitle)
-            .onAppear { speechManager.requestAuthorization() }
-            .onChange(of: chatVM.isLoading) { wasLoading, isLoading in
-                if wasLoading && !isLoading && lang.autoSpeak,
-                   let last = chatVM.messages.last, last.role == .assistant,
-                   !last.content.isEmpty, !last.content.hasPrefix("⚠️") {
-                    speechManager.speak(last.content, locale: speechLocale, messageId: last.id)
+            .onAppear {
+                speechManager.requestAuthorization()
+                // Wire up the voice chat auto-send callback
+                speechManager.onSpeechFinished = { finalText in
+                    guard speechManager.voiceChatMode, !finalText.isEmpty else { return }
+                    if chatVM.isLoading {
+                        // Previous request still in flight — keep transcript visible
+                        chatVM.inputText = finalText
+                        return
+                    }
+                    chatVM.inputText = finalText
+                    sendChat()
+                }
+            }
+            // Loop-closing: restart listening after TTS finishes
+            .onChange(of: speechManager.isSpeaking) { wasSpeaking, isSpeaking in
+                if wasSpeaking && !isSpeaking && speechManager.voiceChatMode {
+                    speechManager.restartListeningAfterTTS(locale: speechLocale)
                 }
             }
             .toolbar {
                 if !chatVM.messages.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
+                            exitVoiceChatMode()
                             speechManager.stopSpeaking()
                             chatVM.clearChat()
                         } label: {
@@ -88,6 +117,9 @@ struct ChatView: View {
                         }
                     }
                 }
+            }
+            .overlay {
+                ToolActionAnimationView(actionType: $animatingActionType)
             }
         }
     }
@@ -152,6 +184,7 @@ struct ChatView: View {
     private var inputBar: some View {
         @Bindable var vm = chatVM
         VStack(spacing: 0) {
+            // Mic error banner
             if let micError = speechManager.errorMessage {
                 HStack(spacing: 6) {
                     Image(systemName: "exclamationmark.triangle.fill")
@@ -174,7 +207,11 @@ struct ChatView: View {
                 .background(Color.orange.opacity(0.1))
             }
 
-            if speechManager.isListening, !speechManager.transcript.isEmpty {
+            // Voice mode status overlay
+            if speechManager.voiceChatMode {
+                voiceModeOverlay
+            } else if speechManager.isListening, !speechManager.transcript.isEmpty {
+                // Legacy dictation transcript indicator
                 HStack(spacing: 8) {
                     Circle()
                         .fill(.red)
@@ -191,6 +228,7 @@ struct ChatView: View {
             }
 
             HStack(spacing: 8) {
+                // Text field (dimmed in voice mode)
                 TextField(lang.chatPlaceholder, text: $vm.inputText, axis: .vertical)
                     .textFieldStyle(.plain)
                     .lineLimit(1...5)
@@ -202,43 +240,88 @@ struct ChatView: View {
                             .strokeBorder(Theme.textTertiary.opacity(0.3), lineWidth: 1)
                     )
                     .focused($isInputFocused)
+                    .disabled(speechManager.voiceChatMode)
+                    .opacity(speechManager.voiceChatMode ? 0.4 : 1.0)
 
-                Button {
-                    if speechManager.isListening {
-                        let text = speechManager.stopListening()
-                        if !text.isEmpty {
-                            chatVM.inputText += (chatVM.inputText.isEmpty ? "" : " ") + text
-                        }
-                    } else {
-                        speechManager.startListening(locale: speechLocale)
+                // Stop speaking button — shown when TTS is active (not in voice mode)
+                if speechManager.isSpeaking && !speechManager.voiceChatMode {
+                    Button {
+                        speechManager.stopSpeaking()
+                    } label: {
+                        Image(systemName: "stop.circle.fill")
+                            .font(.system(size: 32))
+                            .foregroundStyle(.red)
                     }
+                }
+
+                // Mic / Voice button
+                Button {
+                    handleMicTap()
                 } label: {
-                    Image(systemName: speechManager.isListening ? "mic.fill" : "mic")
-                        .font(.system(size: 20))
-                        .foregroundStyle(speechManager.isListening ? .red : Theme.textSecondary)
+                    Image(systemName: voiceMicIcon)
+                        .font(.system(size: speechManager.voiceChatMode ? 24 : 20))
+                        .foregroundStyle(voiceMicColor)
                         .frame(width: 32, height: 32)
                         .contentShape(Circle())
+                        .symbolEffect(.pulse, isActive: speechManager.voiceChatMode && speechManager.isListening)
                 }
 
-                Button {
-                    if speechManager.isListening {
-                        let text = speechManager.stopListening()
-                        if !text.isEmpty {
-                            chatVM.inputText += (chatVM.inputText.isEmpty ? "" : " ") + text
+                // Send button (hidden in voice mode and when speaking)
+                if !speechManager.voiceChatMode && !speechManager.isSpeaking {
+                    Button {
+                        if speechManager.isListening {
+                            let text = speechManager.stopListening()
+                            if !text.isEmpty {
+                                chatVM.inputText += (chatVM.inputText.isEmpty ? "" : " ") + text
+                            }
                         }
+                        sendChat()
+                    } label: {
+                        Image(systemName: "arrow.up.circle.fill")
+                            .font(.system(size: 32))
+                            .foregroundStyle(canSend ? Theme.accent : Theme.textTertiary.opacity(0.4))
                     }
-                    sendChat()
-                } label: {
-                    Image(systemName: "arrow.up.circle.fill")
-                        .font(.system(size: 32))
-                        .foregroundStyle(canSend ? Theme.accent : Theme.textTertiary.opacity(0.4))
+                    .disabled(!canSend)
                 }
-                .disabled(!canSend)
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
         }
         .background(Theme.background)
+    }
+
+    // MARK: - Voice Mode Overlay
+
+    private var voiceModeOverlay: some View {
+        VStack(spacing: 6) {
+            HStack(spacing: 8) {
+                Circle()
+                    .fill(speechManager.isListening ? Theme.accent : Theme.textTertiary)
+                    .frame(width: 10, height: 10)
+                    .scaleEffect(speechManager.isListening ? 1.2 : 0.8)
+                    .animation(
+                        .easeInOut(duration: 0.8).repeatForever(autoreverses: true),
+                        value: speechManager.isListening
+                    )
+
+                Text(voiceModeStatusText)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(Theme.textSecondary)
+
+                Spacer()
+            }
+
+            if speechManager.isListening, !speechManager.transcript.isEmpty {
+                Text(speechManager.transcript)
+                    .font(.caption)
+                    .foregroundStyle(Theme.textSecondary)
+                    .lineLimit(2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(Theme.card)
     }
 
     // MARK: - Typing Indicator
@@ -263,6 +346,70 @@ struct ChatView: View {
         .background(Theme.card, in: RoundedRectangle(cornerRadius: 18))
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 12)
+    }
+
+    // MARK: - Voice Chat Mode
+
+    private func enterVoiceChatMode() {
+        speechManager.voiceChatMode = true
+        isInputFocused = false     // dismiss keyboard
+        speechManager.startListening(locale: speechLocale)
+    }
+
+    private func exitVoiceChatMode() {
+        speechManager.voiceChatMode = false
+        if speechManager.isListening {
+            speechManager.stopListening()
+        }
+        speechManager.stopSpeaking()
+    }
+
+    private func handleMicTap() {
+        if speechManager.voiceChatMode {
+            if speechManager.isSpeaking {
+                // Interrupt TTS → start listening (stay in voice mode)
+                speechManager.stopSpeaking()
+                speechManager.restartListeningAfterTTS(locale: speechLocale)
+            } else {
+                // Exit voice mode
+                exitVoiceChatMode()
+            }
+        } else if speechManager.isListening {
+            // Legacy dictation: stop and append transcript
+            let text = speechManager.stopListening()
+            if !text.isEmpty {
+                chatVM.inputText += (chatVM.inputText.isEmpty ? "" : " ") + text
+            }
+        } else {
+            // Enter voice chat mode
+            enterVoiceChatMode()
+        }
+    }
+
+    private var voiceMicIcon: String {
+        if speechManager.voiceChatMode {
+            return "waveform.circle.fill"
+        }
+        return speechManager.isListening ? "mic.fill" : "mic"
+    }
+
+    private var voiceMicColor: Color {
+        if speechManager.voiceChatMode {
+            return Theme.accent
+        }
+        return speechManager.isListening ? .red : Theme.textSecondary
+    }
+
+    private var voiceModeStatusText: String {
+        if speechManager.isListening {
+            return lang.voiceListening
+        } else if speechManager.isSpeaking {
+            return lang.voiceSpeaking
+        } else if chatVM.isLoading {
+            return lang.voiceThinking
+        } else {
+            return lang.voiceActive
+        }
     }
 
     // MARK: - Send

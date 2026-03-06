@@ -58,10 +58,6 @@ final class ChatViewModel {
 
         isLoading = true
 
-        // Yield main actor briefly so SwiftUI can process the UI update
-        // (show typing indicator) before we start heavy work
-        await Task.yield()
-
         // Build system prompt (snapshot data now, before await)
         let systemPrompt = buildSystemPrompt(
             lang: lang,
@@ -82,10 +78,10 @@ final class ChatViewModel {
         print("[Chat] calling API with \(currentMessages.count) messages")
 
         do {
-            // Tool-use loop
+            // Tool-use loop (also handles pause_turn for server-side tools like web search)
             var toolActions: [ChatMessage.ToolAction] = []
             var iterations = 0
-            let maxIterations = 3
+            let maxIterations = 5  // increased from 3 to accommodate pause_turn continuations
             var workingMessages = currentMessages
 
             while iterations < maxIterations {
@@ -94,8 +90,8 @@ final class ChatViewModel {
 
                 print("[Chat] API call iteration \(iterations)")
 
-                // Run the network call — ClaudeAPIService internally uses Task.detached
-                // so this will NOT block the main actor even though we await here.
+                // ClaudeAPIService is an actor — this call hops to its background
+                // executor. Main actor is suspended (not blocked) during await.
                 let result = try await svc.sendMessageWithTools(
                     systemPrompt: systemPrompt,
                     messages: workingMessages,
@@ -105,7 +101,7 @@ final class ChatViewModel {
                 print("[Chat] API response received — stopReason: \(result.stopReason)")
 
                 if result.stopReason == "tool_use" {
-                    // Build assistant content blocks to echo back
+                    // --- Client-side tool execution (create_reminder, create_note, create_habit) ---
                     var assistantBlocks: [ClaudeMessagePayload.ContentBlock] = []
                     var toolResultBlocks: [ClaudeMessagePayload.ContentBlock] = []
 
@@ -134,8 +130,23 @@ final class ChatViewModel {
                     workingMessages.append(ClaudeMessagePayload(role: "user", content: .blocks(toolResultBlocks)))
 
                     iterations += 1
+
+                } else if result.stopReason == "pause_turn" {
+                    // --- Server tool still running (e.g. web search) — echo back and continue ---
+                    print("[Chat] pause_turn — continuing server tool execution")
+                    workingMessages.append(ClaudeMessagePayload(
+                        role: "assistant",
+                        content: .rawJSON(result.rawContentJSON)
+                    ))
+                    // Empty user message signals "continue"
+                    workingMessages.append(ClaudeMessagePayload(
+                        role: "user",
+                        content: .text("")
+                    ))
+                    iterations += 1
+
                 } else {
-                    // end_turn: extract text, create final display message
+                    // --- end_turn: extract text, create final display message ---
                     let textParts = result.contentBlocks.compactMap { block -> String? in
                         if case .text(let t) = block { return t }
                         return nil
@@ -145,9 +156,28 @@ final class ChatViewModel {
                     let assistantMessage = ChatMessage(role: .assistant, content: finalText, toolActions: toolActions)
                     messages.append(assistantMessage)
 
-                    // Commit working messages + final assistant to canonical apiMessages
+                    // Commit working messages + final assistant to canonical apiMessages.
+                    // Use rawJSON when response includes server tool blocks (web search)
+                    // to preserve encrypted_content and citations for follow-up context.
                     apiMessages = workingMessages
-                    apiMessages.append(ClaudeMessagePayload(role: "assistant", content: .text(finalText)))
+                    let hasServerToolBlocks = result.rawContentJSON.contains { block in
+                        if case .object(let dict) = block,
+                           case .string(let type) = dict["type"] {
+                            return type == "server_tool_use" || type == "web_search_tool_result"
+                        }
+                        return false
+                    }
+                    if hasServerToolBlocks {
+                        apiMessages.append(ClaudeMessagePayload(
+                            role: "assistant",
+                            content: .rawJSON(result.rawContentJSON)
+                        ))
+                    } else {
+                        apiMessages.append(ClaudeMessagePayload(
+                            role: "assistant",
+                            content: .text(finalText)
+                        ))
+                    }
 
                     print("[Chat] assistant reply added (\(finalText.count) chars)")
                     break
@@ -381,7 +411,7 @@ final class ChatViewModel {
         parts.append("""
         You are \(name) — the fun, loyal AI sidekick built into GrogyBot, a personal life dashboard app.
         \(name) is cheerful, witty, a bit cheeky, and always encouraging. You talk like a supportive best friend, not a robot.
-        Do not use emojis in your responses. Keep answers concise, punchy, and fun.
+        NEVER use emojis in your text responses — no emoticons, no unicode symbols, no emoji characters at all. NEVER use markdown formatting — no asterisks, no bold, no headers, no bullet points. Write plain text only. Keep answers concise, punchy, and fun.
         You know the user's habits, reminders, saved items, health data, stocks, and news — reference them to give personalized advice.
         You help with: habit coaching, reminder management, health insights, stock analysis, news chat, and general motivation.
         Always introduce yourself as \(name) if the user asks your name.
@@ -396,6 +426,11 @@ final class ChatViewModel {
         The current date and time is: \(now).
         When the user says "tomorrow", compute the actual date. When they say "9am", use the appropriate time.
         Pick an appropriate emoji for items when the user doesn't specify one.
+        """)
+
+        // Web search instructions
+        parts.append("""
+        You also have web search capability. When the user asks about current events, recent news, real-time information, live scores, or anything outside your training data, use the web_search tool to find up-to-date information. You do not need to ask permission — just search when it would help answer the question accurately. Cite your sources when using search results.
         """)
 
         // Dialect instructions
@@ -489,7 +524,7 @@ final class ChatViewModel {
             Assistant: Пусто, жега е бе! Айде на тепето вечерта, там е убаво.
 
             User: Довиждане!
-            Assistant: Арно бе, арно! До утре! 🍷
+            Assistant: Арно бе, арно! До утре!
             """
             if let vocab = Self.loadPlovdivVocabulary() {
                 dialectPrompt += "\n\nОДОБРЕН РЕЧНИК:\n\(vocab)"
@@ -522,7 +557,7 @@ final class ChatViewModel {
             Assistant: Море, батка, айде на морето! Ей сега тръгваме!
 
             User: Довиждане!
-            Assistant: Арно де, батка! Ей, до утре! 🌊
+            Assistant: Арно де, батка! Ей, до утре!
             """
             if let vocab = Self.loadBurgasVocabulary() {
                 dialectPrompt += "\n\nОДОБРЕН РЕЧНИК:\n\(vocab)"

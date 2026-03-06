@@ -29,7 +29,11 @@ enum AppLanguage: String, CaseIterable {
     static let shared = LanguageManager()
 
     var current: AppLanguage {
-        didSet { UserDefaults.standard.set(current.rawValue, forKey: "appLanguage") }
+        didSet {
+            UserDefaults.standard.set(current.rawValue, forKey: "appLanguage")
+            // Reload voice preference for the new language
+            selectedVoiceId = UserDefaults.standard.string(forKey: "selected_voice_id_\(current.rawValue)") ?? ""
+        }
     }
 
     /// The user-configurable AI assistant name (default: Пучо / Pucho)
@@ -40,6 +44,12 @@ enum AppLanguage: String, CaseIterable {
     /// Auto-speak AI responses aloud
     var autoSpeak: Bool {
         didSet { UserDefaults.standard.set(autoSpeak, forKey: "auto_speak") }
+    }
+
+    /// Saved TTS voice identifier per language (empty = auto-select).
+    /// Each language has its own voice preference stored under "selected_voice_id_{lang}".
+    var selectedVoiceId: String {
+        didSet { UserDefaults.standard.set(selectedVoiceId, forKey: "selected_voice_id_\(current.rawValue)") }
     }
 
     // MARK: - Module Toggles (all default ON)
@@ -71,6 +81,7 @@ enum AppLanguage: String, CaseIterable {
         self.current = AppLanguage(rawValue: saved) ?? .english
         self.aiName = UserDefaults.standard.string(forKey: "ai_assistant_name") ?? "Grogy"
         self.autoSpeak = Self.loadBool("auto_speak")
+        self.selectedVoiceId = UserDefaults.standard.string(forKey: "selected_voice_id_\(saved)") ?? ""
         self.moduleHabits = Self.loadBool("module_habits")
         self.moduleReminders = Self.loadBool("module_reminders")
         self.moduleNotes = Self.loadBool("module_stuff")
@@ -362,15 +373,41 @@ extension LanguageManager {
     var complete: String { t("Complete", "Готово",     "Готово",     "Арно",       "Готово бе",   "Арно де") }
 
     // MARK: Chat / AI
+    // MARK: – Startup Screen
+    var startupGreeting: String { t("Hi, I am your personal assistant \(aiName)",
+                                     "Здравей, аз съм твоят личен асистент \(aiName)",
+                                     "Яла, аз съм ти \(aiName)",
+                                     "Епа, яз съм ти \(aiName)",
+                                     "Майна, аз съм \(aiName)",
+                                     "Ей, батка, аз съм \(aiName)") }
+    var startupAskNow:   String { t("Ask \(aiName) now",
+                                     "Питай \(aiName)",
+                                     "Питай \(aiName)",
+                                     "Питай \(aiName)",
+                                     "Питай \(aiName)",
+                                     "Питай \(aiName)") }
+    var startupDashboard: String { t("Check Dashboard",
+                                      "Към началото",
+                                      "Към началото",
+                                      "Към началото",
+                                      "Към началото",
+                                      "Към началото") }
+
+    // MARK: – Voice Chat Mode
+    var voiceListening: String { t("Listening...", "Слушам...", "Слушам...", "Слушам...", "Слушам бе...", "Слушам батка...") }
+    var voiceSpeaking:  String { t("\(aiName) is speaking...", "\(aiName) говори...", "\(aiName) приказва...", "\(aiName) приказва...", "\(aiName) говори бе...", "\(aiName) говори батка...") }
+    var voiceThinking:  String { t("Thinking...", "Мисля...", "Мисля...", "Мисля...", "Мисля бе...", "Мисля батка...") }
+    var voiceActive:    String { t("Voice mode", "Гласов режим", "Гласов режим", "Гласов режим", "Гласов режим", "Гласов режим") }
+
     var chatTab:         String { aiName }
-    var chatTitle:       String { "\(aiName) 🐾" }
+    var chatTitle:       String { aiName }
     var chatPlaceholder: String { t("Ask \(aiName) anything…", "Питай \(aiName) нещо…", "Питай \(aiName) нещо…", "Питай \(aiName) нещо…", "Питай \(aiName) нещо бе…", "Питай \(aiName) нещо батка…") }
-    var chatWelcome:     String { t("Hey! I'm \(aiName) — your GrogyBot sidekick! I know your habits, reminders, stocks, health & more. Ask me anything! 🐾",
-                                     "Здрасти! Аз съм \(aiName) — твоят верен помощник в GrogyBot! Знам за навиците, напомнянията, акциите и здравето ти. Питай ме! 🐾",
-                                     "Яла, баце! Язе сам \(aiName) — твоя помощник в GrogyBot! Знам за навиците, напомнянията, акциите и здравето ти. Питай ме! 🐾",
-                                     "Яз съм \(aiName) — твоя помощник у GrogyBot! Знам за навиците, напомнянията, акциите и здравето ти. Питай ме! 🐾",
-                                     "Майна! Аз съм \(aiName) — твоят помощник в GrogyBot! Знам за навиците, напомнянията, акциите и здравето ти. Питай ме бе! 🐾",
-                                     "Ей, батка! Аз съм \(aiName) — твоят помощник в GrogyBot! Знам за навиците, напомнянията, акциите и здравето ти. Питай ме! 🐾") }
+    var chatWelcome:     String { t("Hey! I'm \(aiName) — your GrogyBot sidekick! I know your habits, reminders, stocks, health & more. Ask me anything!",
+                                     "Здрасти! Аз съм \(aiName) — твоят верен помощник в GrogyBot! Знам за навиците, напомнянията, акциите и здравето ти. Питай ме!",
+                                     "Яла, баце! Язе сам \(aiName) — твоя помощник в GrogyBot! Знам за навиците, напомнянията, акциите и здравето ти. Питай ме!",
+                                     "Яз съм \(aiName) — твоя помощник у GrogyBot! Знам за навиците, напомнянията, акциите и здравето ти. Питай ме!",
+                                     "Майна! Аз съм \(aiName) — твоят помощник в GrogyBot! Знам за навиците, напомнянията, акциите и здравето ти. Питай ме бе!",
+                                     "Ей, батка! Аз съм \(aiName) — твоят помощник в GrogyBot! Знам за навиците, напомнянията, акциите и здравето ти. Питай ме!") }
     var chatSend:        String { t("Send",               "Изпрати",           "Изпрати",           "Изпрати",           "Изпрати",           "Изпрати") }
     var chatNoApiKey:    String { t("Set your Claude API key in Settings to wake up \(aiName)",
                                      "Добави Claude API ключ в Настройки за да събудиш \(aiName)",
@@ -389,6 +426,8 @@ extension LanguageManager {
     var dashAiTitle:     String { aiName }
     var aiNameLabel:     String { t("Assistant Name",     "Име на асистента",  "Име на помощника",  "Име на помощника",  "Име на помощника",  "Име на помощника") }
     var autoSpeakLabel:  String { t("Read Responses Aloud", "Четене на отговорите на глас", "Четене на отговорите на глас", "Четене на отговорите на глас", "Четене на отговорите на глас", "Четене на отговорите на глас") }
+    var voiceLabel:      String { t("\(aiName)'s Voice", "Гласът на \(aiName)", "Гласът на \(aiName)", "Гласът на \(aiName)", "Гласът на \(aiName)", "Гласът на \(aiName)") }
+    var voiceAuto:       String { t("Auto", "Автоматично", "Автоматично", "Автоматично", "Автоматично", "Автоматично") }
     var modulesLabel:    String { t("Modules",             "Модули",              "Модули",              "Модули",              "Модули",              "Модули") }
 
     // MARK: Health

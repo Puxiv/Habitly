@@ -278,7 +278,14 @@ struct RichTextEditor: UIViewRepresentable {
         tv.backgroundColor = .clear
         tv.textContainerInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         tv.textContainer.lineFragmentPadding = 0
+        tv.textContainer.widthTracksTextView = true
         tv.autocorrectionType = .default
+
+        // Ensure the text view accepts the width SwiftUI proposes
+        // instead of expanding horizontally to fit content
+        tv.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        tv.setContentHuggingPriority(.defaultLow, for: .horizontal)
+
         tv.typingAttributes = [
             .font: UIFont.systemFont(ofSize: 17),
             .foregroundColor: UIColor.white
@@ -289,11 +296,22 @@ struct RichTextEditor: UIViewRepresentable {
             tv.attributedText = attributedText
         }
 
+        // Tap gesture for image interactions (resize / delete)
+        let tap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleImageTap(_:)))
+        tap.delegate = context.coordinator
+        tv.addGestureRecognizer(tap)
+
         DispatchQueue.main.async {
             formatter.textView = tv
         }
 
         return tv
+    }
+
+    func sizeThatFits(_ proposal: ProposedViewSize, uiView: UITextView, context: Context) -> CGSize? {
+        let width = proposal.width ?? UIScreen.main.bounds.width
+        let fittingSize = uiView.sizeThatFits(CGSize(width: width, height: CGFloat.greatestFiniteMagnitude))
+        return CGSize(width: width, height: max(fittingSize.height, 300))
     }
 
     func updateUIView(_ tv: UITextView, context: Context) {
@@ -308,13 +326,15 @@ struct RichTextEditor: UIViewRepresentable {
         Coordinator(self)
     }
 
-    class Coordinator: NSObject, UITextViewDelegate {
+    class Coordinator: NSObject, UITextViewDelegate, UIGestureRecognizerDelegate {
         let parent: RichTextEditor
         var isUpdating = false
 
         init(_ parent: RichTextEditor) {
             self.parent = parent
         }
+
+        // MARK: - UITextViewDelegate
 
         func textViewDidChange(_ textView: UITextView) {
             isUpdating = true
@@ -331,10 +351,103 @@ struct RichTextEditor: UIViewRepresentable {
             }
         }
 
-        // Handle checklist taps: toggle ☐ ↔ ☑
         func textView(_ textView: UITextView, shouldInteractWith textAttachment: NSTextAttachment, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+            return false // We handle image taps ourselves
+        }
+
+        // MARK: - UIGestureRecognizerDelegate
+
+        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer) -> Bool {
             return true
         }
+
+        // MARK: - Image Tap Handler
+
+        @objc func handleImageTap(_ gesture: UITapGestureRecognizer) {
+            guard let tv = gesture.view as? UITextView else { return }
+            let point = gesture.location(in: tv)
+
+            // Offset by text container inset
+            let adjusted = CGPoint(
+                x: point.x - tv.textContainerInset.left,
+                y: point.y - tv.textContainerInset.top
+            )
+
+            let charIndex = tv.layoutManager.characterIndex(
+                for: adjusted,
+                in: tv.textContainer,
+                fractionOfDistanceBetweenInsertionPoints: nil
+            )
+
+            guard charIndex < tv.textStorage.length else { return }
+
+            // Check if tapped character has an attachment
+            let attrs = tv.textStorage.attributes(at: charIndex, effectiveRange: nil)
+            guard let attachment = attrs[.attachment] as? NSTextAttachment,
+                  let originalImage = attachment.image else { return }
+
+            let attachmentRange = NSRange(location: charIndex, length: 1)
+            showImageMenu(for: attachment, image: originalImage, range: attachmentRange, in: tv)
+        }
+
+        private func showImageMenu(for attachment: NSTextAttachment, image: UIImage, range: NSRange, in tv: UITextView) {
+            guard let windowScene = tv.window?.windowScene,
+                  let vc = windowScene.keyWindow?.rootViewController?.presentedViewController
+                       ?? windowScene.keyWindow?.rootViewController else { return }
+
+            let maxWidth = tv.textContainer.size.width - tv.textContainer.lineFragmentPadding * 2 - 20
+
+            let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+
+            alert.addAction(UIAlertAction(title: "Small", style: .default) { _ in
+                let w = maxWidth * 0.35
+                let scale = w / image.size.width
+                attachment.bounds = CGRect(origin: .zero, size: CGSize(width: w, height: image.size.height * scale))
+                self.refreshAttachment(in: tv, range: range)
+            })
+
+            alert.addAction(UIAlertAction(title: "Medium", style: .default) { _ in
+                let w = maxWidth * 0.6
+                let scale = w / image.size.width
+                attachment.bounds = CGRect(origin: .zero, size: CGSize(width: w, height: image.size.height * scale))
+                self.refreshAttachment(in: tv, range: range)
+            })
+
+            alert.addAction(UIAlertAction(title: "Full Width", style: .default) { _ in
+                let w = maxWidth
+                let scale = min(1.0, w / image.size.width)
+                attachment.bounds = CGRect(origin: .zero, size: CGSize(width: image.size.width * scale, height: image.size.height * scale))
+                self.refreshAttachment(in: tv, range: range)
+            })
+
+            alert.addAction(UIAlertAction(title: "Delete", style: .destructive) { _ in
+                tv.textStorage.deleteCharacters(in: range)
+                self.isUpdating = true
+                self.parent.attributedText = tv.attributedText
+                self.isUpdating = false
+            })
+
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+            // iPad popover anchor
+            if let popover = alert.popoverPresentationController {
+                let rect = tv.layoutManager.boundingRect(forGlyphRange: range, in: tv.textContainer)
+                popover.sourceView = tv
+                popover.sourceRect = rect.offsetBy(dx: tv.textContainerInset.left, dy: tv.textContainerInset.top)
+            }
+
+            vc.present(alert, animated: true)
+        }
+
+        private func refreshAttachment(in tv: UITextView, range: NSRange) {
+            // Force layout recalculation by editing then restoring the attribute
+            tv.textStorage.edited(.editedAttributes, range: range, changeInLength: 0)
+            isUpdating = true
+            parent.attributedText = tv.attributedText
+            isUpdating = false
+        }
+
+        // MARK: - Helpers
 
         private func fixDarkText(in tv: UITextView) {
             let fullRange = NSRange(location: 0, length: tv.textStorage.length)

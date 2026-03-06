@@ -1,15 +1,20 @@
 import SwiftUI
 
-/// Central design-token file – dark theme with neon-green accent.
+/// Central design-token file – dark theme with robot-cyan accent.
 enum Theme {
 
     // MARK: - Accent
 
-    /// Primary neon-green accent used for buttons, active states, highlights.
-    static let accent = Color(red: 0.13, green: 0.85, blue: 0.33)          // ≈ #21D954
+    /// Primary cyan accent matching Grogy's glowing eyes (#00E5FF).
+    static let accent = Color(red: 0.0, green: 0.898, blue: 1.0)            // #00E5FF
 
     /// Dimmed accent for icon-circle backgrounds, badges, etc.
     static let accentDim = accent.opacity(0.15)
+
+    // MARK: - Aliases (for callsites that reference Theme.cyan)
+
+    static let cyan    = accent
+    static let cyanDim = accentDim
 
     // MARK: - Semantic
 
@@ -35,10 +40,10 @@ enum Theme {
 
     // MARK: - Gradients
 
-    /// Subtle dark-green gradient for hero cards (AI teaser, etc.)
+    /// Subtle dark-cyan gradient for hero cards (AI teaser, etc.)
     static let accentGradient = LinearGradient(
-        colors: [Color(red: 0.06, green: 0.25, blue: 0.12),
-                 Color(red: 0.04, green: 0.18, blue: 0.08)],
+        colors: [Color(red: 0.04, green: 0.18, blue: 0.25),
+                 Color(red: 0.02, green: 0.12, blue: 0.18)],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )

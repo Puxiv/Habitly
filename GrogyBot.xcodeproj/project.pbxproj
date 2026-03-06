@@ -1,0 +1,736 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 63;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		069D931B5E76DACDBAEA7511 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1965A468388440C25A0049D4 /* NotificationManager.swift */; };
+		07B47B46BC2D0D1BE2461492 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A264EDA3E6152DD334A84E22 /* StatisticsView.swift */; };
+		0AE46B8E8F5E8356CEE1C8B3 /* HealthData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D517955B06BE2555970D5EE /* HealthData.swift */; };
+		0C2C6AF319190F48CE160389 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CD2DEE881BBBADE9D5B9AC /* ChatViewModel.swift */; };
+		0C3896F908DD6DE21F875E3B /* Intro.MP4 in Resources */ = {isa = PBXBuildFile; fileRef = 3D9A7FBA55FE7639E599F1EC /* Intro.MP4 */; };
+		0F0DD940B53B6A486ED593CA /* HabitsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC7DFA2A041CFA01F85E6BDB /* HabitsListView.swift */; };
+		11A0FFB8F7D01D917EF13AC6 /* RemindersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71E6C2F44DE09DBE02F4DBCB /* RemindersListView.swift */; };
+		11DD276C4CB399BEFEAAA398 /* HabitRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BEA2D0D17F59EBBDC0BE9F3 /* HabitRowView.swift */; };
+		1741D14C1F5B84B7F34C4334 /* HealthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76343E363C2BA079355B57C9 /* HealthViewModel.swift */; };
+		17BC10B6D39D5173A898776D /* NewsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9912901639465D93330872 /* NewsViewModel.swift */; };
+		1C821A6EE420ECC4AA044EE7 /* AddEditReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824AAC5E8FF6BFF13F0C4BC2 /* AddEditReminderView.swift */; };
+		1D74D1C89D77076D94E75F4B /* StockService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 130C1421CC52B21B95569B21 /* StockService.swift */; };
+		1E96804D265DD4422B581550 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28C312B0B8ADE7C424726DCB /* SettingsView.swift */; };
+		2000C9750329111ABA8F802D /* ChatBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96B0D43DE5A597DA478F093A /* ChatBubbleView.swift */; };
+		2019D64724D4F5512D18699B /* EmojiPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC3FFE4D576148B68AFBE02F /* EmojiPickerView.swift */; };
+		2036C9C7C2D7DF32AE6D6766 /* NoteEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A26E466A4CFF92426F656CA /* NoteEditorView.swift */; };
+		2098B1906C8F5CAFAF95C449 /* NewsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 218EB836EE84845BA66841A5 /* NewsService.swift */; };
+		231D342337DFA6BB186EE410 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68B333DDB00BE544C3D00C3 /* ChatView.swift */; };
+		2367BE9A2CA99850D4502600 /* vrachanski_vocabulary.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5243DCA1E1597E31177B3074 /* vrachanski_vocabulary.txt */; };
+		251AE0F343172A4E4F2CEDB4 /* AddEditHabitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F9F845F488D9934F6E582 /* AddEditHabitView.swift */; };
+		27D649D8FF1825A1F21D2362 /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71A2F38A82DB2C36D505699 /* LanguageManager.swift */; };
+		31406B9A40B000B6A59F34DC /* ClaudeAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7287FD6DDCCEBFF1AD4C117 /* ClaudeAPIService.swift */; };
+		32A40D383A1FF5D77CC6559F /* Habit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 615871546CEF96CA5EF2B6CE /* Habit.swift */; };
+		3B03893EC6BDB87B3009B011 /* WeatherData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 461AEC9301B628988ABD9839 /* WeatherData.swift */; };
+		3ED59604F5A53EC09203F43B /* CalendarGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A4637B9B4EEF004080BBE9 /* CalendarGridView.swift */; };
+		4E797AB2E3C770B1B107DB2F /* StartupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0934E63609122DA5A2565767 /* StartupView.swift */; };
+		4F00B8A2A921F958AC197935 /* StockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C2CA26EB17125A5DE2F577 /* StockData.swift */; };
+		4F03A310A75A01CE11116319 /* burgas_vocabulary.txt in Resources */ = {isa = PBXBuildFile; fileRef = C623DA86030B6041EC2E3708 /* burgas_vocabulary.txt */; };
+		51A07F0E5F65FFDE40718FE1 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0366C4BC5E1769FF853E8C99 /* HistoryView.swift */; };
+		56EEE3584475411A6FF00ED5 /* StatisticsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672769578B83BF776F3AEBC1 /* StatisticsViewModel.swift */; };
+		5774CD3043845AAF3B7936E6 /* HabitsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378306A7F775DE5E28E7D040 /* HabitsViewModel.swift */; };
+		59B4CC38FD175A74E2F8B783 /* NewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF5BDA2584FCF62BA7DA98C /* NewsView.swift */; };
+		5A0CC299F076CD8CE8762D99 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B8E52CE01C2598C418F4D6 /* HealthService.swift */; };
+		5A66FD1D90A569579C57BE35 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23AAA4BC0D833199A2A5B5CE /* DashboardView.swift */; };
+		5A826B19F5A26C26969A32D7 /* Frequency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5128536F7F252990D1E0C825 /* Frequency.swift */; };
+		6165744AD523B52EA81A2CD7 /* GrogyBotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307A10314BDBB1A5728DF0E2 /* GrogyBotApp.swift */; };
+		645D2C97EABADA1D0C5F753E /* DateHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68297B4028DAACF5F705D7B4 /* DateHelpers.swift */; };
+		662DF52B5A34D6A5F7114B4B /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A62E0E289A3DEC2FE4BCCB9E /* Theme.swift */; };
+		6C64181D859A3589ABD61411 /* WeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8817ABCEAED2E4BCBC0441 /* WeatherView.swift */; };
+		71C8FD747B793BB4C7B603E6 /* NotesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F8A52263FCC81171F3C0B6 /* NotesListView.swift */; };
+		799FACB5262AC8DC7DF84E25 /* NewsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA4ED31FEC38A3B88F6AD545 /* NewsData.swift */; };
+		805C3915A07486EEC6DA36E3 /* StuffViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522AE6DF9F707766884CC87B /* StuffViewModel.swift */; };
+		887312C0B276BFF434F6B84D /* NoteRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28BB6AD52F6AB1A65BD01D0A /* NoteRowView.swift */; };
+		8B08872F6260DDDE132FDF96 /* StarRatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF88CB3C0A8865EAD54B4352 /* StarRatingView.swift */; };
+		95004D89651614FBD0E36527 /* pernik_vocabulary.txt in Resources */ = {isa = PBXBuildFile; fileRef = 9F9DD93B316C20508184E593 /* pernik_vocabulary.txt */; };
+		9806A9C4F294FE69BE2C3438 /* Reminder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA7A2F11AF60234496E2BF7 /* Reminder.swift */; };
+		9944DC92393324C6720B007A /* RemindersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECA2C727737309D05505F080 /* RemindersViewModel.swift */; };
+		9D3679A7DD4FF25FE9A24295 /* WeekdayPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C334DFD591CB9EEA6E0F1E25 /* WeekdayPicker.swift */; };
+		9EFC3AFD24D002FC4CA6C32D /* ReminderRepeat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BA3136B9ACFD25FC40CFA1C /* ReminderRepeat.swift */; };
+		A2F6D9021D819D96E08E321D /* plovdiv_vocabulary.txt in Resources */ = {isa = PBXBuildFile; fileRef = F71C485426AD4B1B1086D82F /* plovdiv_vocabulary.txt */; };
+		A5D442FB12CC4990D533CE1F /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FB64AB11192B8DB57E65A5F /* SpeechManager.swift */; };
+		B475C472881F1A789CE2E5FB /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90071988BD1E59322CE22BD0 /* WeatherService.swift */; };
+		B84DD15E1F0B36DE9B64F8AB /* StuffCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AEDFD30C6669DD6F2905FCC /* StuffCategory.swift */; };
+		BF3CD4160BB9A72F88D5B490 /* WeatherViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4B90A3581F7A8017176771C /* WeatherViewModel.swift */; };
+		C225A1C2A7F5273E62764AC1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55595581334FA7C694A6D1E6 /* Assets.xcassets */; };
+		C2D9C08B51E7041355047011 /* StocksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD2823B049FC9FE7B116883 /* StocksViewModel.swift */; };
+		C4080A03A984C72E97395294 /* StuffItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17D7B80D07CC43A7DDCECDD6 /* StuffItem.swift */; };
+		DBAAA1179B8D86A9F83172F1 /* HealthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B161014B372044D5C2D15291 /* HealthView.swift */; };
+		DC6120C22A9DA131351B2885 /* ColorPickerRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83AFA162BE055EB2D021ADA7 /* ColorPickerRow.swift */; };
+		DF55C31C39DE375CFBC6E637 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE001AB68B59474150517E5D /* Color+Hex.swift */; };
+		E4454C3573F4A76322DE46E7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6B29825E11364BF57294DF /* ContentView.swift */; };
+		EAFCFE636711E7BA929FC403 /* StreakBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7B17D4CB6E9ABE8E419E6D /* StreakBadgeView.swift */; };
+		EB2A3D18E7232576A998566A /* RichTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8507EDB7554D37A63B6DC342 /* RichTextEditor.swift */; };
+		EE97CAB98D3CDE488064AD12 /* ReminderRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304C03496DF817D934E0290C /* ReminderRowView.swift */; };
+		F7D1FF3987BA3714DC37C402 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4980F6CD0E1F4F708CC640 /* ChatMessage.swift */; };
+		F8A1B2C3D4E5F607891A2B3C /* creating.mov in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F607891A2B3C4D /* creating.mov */; };
+		F8D4E5F607182C3A4B5C6D7E /* ToolActionAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F60718B2A3C4D5E6F7 /* ToolActionAnimationView.swift */; };
+		F95CF711B17C94B5DFC8E2DE /* StocksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C6369226A9FA64A8FE8C91 /* StocksView.swift */; };
+		FD1E73AE04DAA1E09D5DCC35 /* HabitEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756561FA48D992BD5AA7A9F4 /* HabitEntry.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		027F9F845F488D9934F6E582 /* AddEditHabitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEditHabitView.swift; sourceTree = "<group>"; };
+		0366C4BC5E1769FF853E8C99 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		07C2CA26EB17125A5DE2F577 /* StockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockData.swift; sourceTree = "<group>"; };
+		0934E63609122DA5A2565767 /* StartupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupView.swift; sourceTree = "<group>"; };
+		0AF5BDA2584FCF62BA7DA98C /* NewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsView.swift; sourceTree = "<group>"; };
+		130C1421CC52B21B95569B21 /* StockService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockService.swift; sourceTree = "<group>"; };
+		17D7B80D07CC43A7DDCECDD6 /* StuffItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StuffItem.swift; sourceTree = "<group>"; };
+		1965A468388440C25A0049D4 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		1D517955B06BE2555970D5EE /* HealthData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthData.swift; sourceTree = "<group>"; };
+		1F6B29825E11364BF57294DF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2096F0EA66186B3EE4499856 /* GrogyBot.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GrogyBot.entitlements; sourceTree = "<group>"; };
+		218EB836EE84845BA66841A5 /* NewsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsService.swift; sourceTree = "<group>"; };
+		23AAA4BC0D833199A2A5B5CE /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		28BB6AD52F6AB1A65BD01D0A /* NoteRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteRowView.swift; sourceTree = "<group>"; };
+		28C312B0B8ADE7C424726DCB /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		2C8817ABCEAED2E4BCBC0441 /* WeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherView.swift; sourceTree = "<group>"; };
+		304C03496DF817D934E0290C /* ReminderRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderRowView.swift; sourceTree = "<group>"; };
+		307A10314BDBB1A5728DF0E2 /* GrogyBotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrogyBotApp.swift; sourceTree = "<group>"; };
+		33C6369226A9FA64A8FE8C91 /* StocksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StocksView.swift; sourceTree = "<group>"; };
+		378306A7F775DE5E28E7D040 /* HabitsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitsViewModel.swift; sourceTree = "<group>"; };
+		3A26E466A4CFF92426F656CA /* NoteEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEditorView.swift; sourceTree = "<group>"; };
+		3D9A7FBA55FE7639E599F1EC /* Intro.MP4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Intro.MP4; sourceTree = "<group>"; };
+		461AEC9301B628988ABD9839 /* WeatherData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherData.swift; sourceTree = "<group>"; };
+		4CA7A2F11AF60234496E2BF7 /* Reminder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reminder.swift; sourceTree = "<group>"; };
+		4FB64AB11192B8DB57E65A5F /* SpeechManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechManager.swift; sourceTree = "<group>"; };
+		5128536F7F252990D1E0C825 /* Frequency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frequency.swift; sourceTree = "<group>"; };
+		522AE6DF9F707766884CC87B /* StuffViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StuffViewModel.swift; sourceTree = "<group>"; };
+		5243DCA1E1597E31177B3074 /* vrachanski_vocabulary.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = vrachanski_vocabulary.txt; sourceTree = "<group>"; };
+		53B8E52CE01C2598C418F4D6 /* HealthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthService.swift; sourceTree = "<group>"; };
+		55595581334FA7C694A6D1E6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		615871546CEF96CA5EF2B6CE /* Habit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Habit.swift; sourceTree = "<group>"; };
+		672769578B83BF776F3AEBC1 /* StatisticsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsViewModel.swift; sourceTree = "<group>"; };
+		68297B4028DAACF5F705D7B4 /* DateHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateHelpers.swift; sourceTree = "<group>"; };
+		71E6C2F44DE09DBE02F4DBCB /* RemindersListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersListView.swift; sourceTree = "<group>"; };
+		756561FA48D992BD5AA7A9F4 /* HabitEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitEntry.swift; sourceTree = "<group>"; };
+		76343E363C2BA079355B57C9 /* HealthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthViewModel.swift; sourceTree = "<group>"; };
+		7AEDFD30C6669DD6F2905FCC /* StuffCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StuffCategory.swift; sourceTree = "<group>"; };
+		7B7B17D4CB6E9ABE8E419E6D /* StreakBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakBadgeView.swift; sourceTree = "<group>"; };
+		7BEA2D0D17F59EBBDC0BE9F3 /* HabitRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitRowView.swift; sourceTree = "<group>"; };
+		824AAC5E8FF6BFF13F0C4BC2 /* AddEditReminderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEditReminderView.swift; sourceTree = "<group>"; };
+		83AFA162BE055EB2D021ADA7 /* ColorPickerRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerRow.swift; sourceTree = "<group>"; };
+		8507EDB7554D37A63B6DC342 /* RichTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichTextEditor.swift; sourceTree = "<group>"; };
+		8B40F30936D236E17CAC6578 /* GrogyBot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GrogyBot.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8E4980F6CD0E1F4F708CC640 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
+		90071988BD1E59322CE22BD0 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
+		96B0D43DE5A597DA478F093A /* ChatBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBubbleView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F607891A2B3C4D /* creating.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = creating.mov; sourceTree = "<group>"; };
+		C3D4E5F60718B2A3C4D5E6F7 /* ToolActionAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolActionAnimationView.swift; sourceTree = "<group>"; };
+		9BA3136B9ACFD25FC40CFA1C /* ReminderRepeat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderRepeat.swift; sourceTree = "<group>"; };
+		9F9DD93B316C20508184E593 /* pernik_vocabulary.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = pernik_vocabulary.txt; sourceTree = "<group>"; };
+		A264EDA3E6152DD334A84E22 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
+		A62E0E289A3DEC2FE4BCCB9E /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		A68B333DDB00BE544C3D00C3 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		B161014B372044D5C2D15291 /* HealthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthView.swift; sourceTree = "<group>"; };
+		B2CD2DEE881BBBADE9D5B9AC /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		BCD2823B049FC9FE7B116883 /* StocksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StocksViewModel.swift; sourceTree = "<group>"; };
+		C334DFD591CB9EEA6E0F1E25 /* WeekdayPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekdayPicker.swift; sourceTree = "<group>"; };
+		C623DA86030B6041EC2E3708 /* burgas_vocabulary.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = burgas_vocabulary.txt; sourceTree = "<group>"; };
+		C7287FD6DDCCEBFF1AD4C117 /* ClaudeAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeAPIService.swift; sourceTree = "<group>"; };
+		CC3FFE4D576148B68AFBE02F /* EmojiPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPickerView.swift; sourceTree = "<group>"; };
+		CC7DFA2A041CFA01F85E6BDB /* HabitsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitsListView.swift; sourceTree = "<group>"; };
+		CE9912901639465D93330872 /* NewsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsViewModel.swift; sourceTree = "<group>"; };
+		DF88CB3C0A8865EAD54B4352 /* StarRatingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarRatingView.swift; sourceTree = "<group>"; };
+		E5F5045D9E335AE22FE7F151 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		EA4ED31FEC38A3B88F6AD545 /* NewsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsData.swift; sourceTree = "<group>"; };
+		ECA2C727737309D05505F080 /* RemindersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersViewModel.swift; sourceTree = "<group>"; };
+		EE001AB68B59474150517E5D /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
+		F0A4637B9B4EEF004080BBE9 /* CalendarGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarGridView.swift; sourceTree = "<group>"; };
+		F4B90A3581F7A8017176771C /* WeatherViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewModel.swift; sourceTree = "<group>"; };
+		F71A2F38A82DB2C36D505699 /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageManager.swift; sourceTree = "<group>"; };
+		F71C485426AD4B1B1086D82F /* plovdiv_vocabulary.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = plovdiv_vocabulary.txt; sourceTree = "<group>"; };
+		F8F8A52263FCC81171F3C0B6 /* NotesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesListView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		02725D0DD0510D133C775604 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AE49F676BBAB76A4CCA27274 /* AddEditHabit */,
+				B90C5979210176FC5A115F5F /* Chat */,
+				B3F9CD6A70EE76C12B126AC0 /* Dashboard */,
+				7CE18AB376835DD6DD7EEDC4 /* HabitsList */,
+				E647FAA552884F295B5112E8 /* Health */,
+				4C57CFA60512976ADDDBBAA9 /* History */,
+				6F1BCBB5C013BB50AB7DC125 /* News */,
+				B3D7E1542287F46A67B7AE6A /* Notes */,
+				80702E19F905754FFBD85669 /* Reminders */,
+				2532DDEE316822EC7C09C5D8 /* Settings */,
+				311E83503DF6AA51C7D6DD47 /* Shared */,
+				88564AEF3E56017BAEB0DDCD /* Startup */,
+				AE58C850B8EA6E12870A3988 /* Statistics */,
+				6C484F4C922DEB0AF7E9FC9B /* Stocks */,
+				C2FDC87B2B9C19D2D8BA58B5 /* Weather */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		2532DDEE316822EC7C09C5D8 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				28C312B0B8ADE7C424726DCB /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		311E83503DF6AA51C7D6DD47 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				CC3FFE4D576148B68AFBE02F /* EmojiPickerView.swift */,
+				DF88CB3C0A8865EAD54B4352 /* StarRatingView.swift */,
+				7B7B17D4CB6E9ABE8E419E6D /* StreakBadgeView.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		4C57CFA60512976ADDDBBAA9 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				F0A4637B9B4EEF004080BBE9 /* CalendarGridView.swift */,
+				0366C4BC5E1769FF853E8C99 /* HistoryView.swift */,
+			);
+			path = History;
+			sourceTree = "<group>";
+		};
+		50242EBE1F7B15F63601A908 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				55595581334FA7C694A6D1E6 /* Assets.xcassets */,
+				C623DA86030B6041EC2E3708 /* burgas_vocabulary.txt */,
+				A1B2C3D4E5F607891A2B3C4D /* creating.mov */,
+				3D9A7FBA55FE7639E599F1EC /* Intro.MP4 */,
+				9F9DD93B316C20508184E593 /* pernik_vocabulary.txt */,
+				F71C485426AD4B1B1086D82F /* plovdiv_vocabulary.txt */,
+				5243DCA1E1597E31177B3074 /* vrachanski_vocabulary.txt */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		5AEABBA2BAE646A582D4E941 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				C7287FD6DDCCEBFF1AD4C117 /* ClaudeAPIService.swift */,
+				EE001AB68B59474150517E5D /* Color+Hex.swift */,
+				68297B4028DAACF5F705D7B4 /* DateHelpers.swift */,
+				53B8E52CE01C2598C418F4D6 /* HealthService.swift */,
+				F71A2F38A82DB2C36D505699 /* LanguageManager.swift */,
+				218EB836EE84845BA66841A5 /* NewsService.swift */,
+				1965A468388440C25A0049D4 /* NotificationManager.swift */,
+				4FB64AB11192B8DB57E65A5F /* SpeechManager.swift */,
+				130C1421CC52B21B95569B21 /* StockService.swift */,
+				A62E0E289A3DEC2FE4BCCB9E /* Theme.swift */,
+				90071988BD1E59322CE22BD0 /* WeatherService.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		6C484F4C922DEB0AF7E9FC9B /* Stocks */ = {
+			isa = PBXGroup;
+			children = (
+				33C6369226A9FA64A8FE8C91 /* StocksView.swift */,
+			);
+			path = Stocks;
+			sourceTree = "<group>";
+		};
+		6F1BCBB5C013BB50AB7DC125 /* News */ = {
+			isa = PBXGroup;
+			children = (
+				0AF5BDA2584FCF62BA7DA98C /* NewsView.swift */,
+			);
+			path = News;
+			sourceTree = "<group>";
+		};
+		7CE18AB376835DD6DD7EEDC4 /* HabitsList */ = {
+			isa = PBXGroup;
+			children = (
+				7BEA2D0D17F59EBBDC0BE9F3 /* HabitRowView.swift */,
+				CC7DFA2A041CFA01F85E6BDB /* HabitsListView.swift */,
+			);
+			path = HabitsList;
+			sourceTree = "<group>";
+		};
+		80702E19F905754FFBD85669 /* Reminders */ = {
+			isa = PBXGroup;
+			children = (
+				824AAC5E8FF6BFF13F0C4BC2 /* AddEditReminderView.swift */,
+				304C03496DF817D934E0290C /* ReminderRowView.swift */,
+				71E6C2F44DE09DBE02F4DBCB /* RemindersListView.swift */,
+			);
+			path = Reminders;
+			sourceTree = "<group>";
+		};
+		88564AEF3E56017BAEB0DDCD /* Startup */ = {
+			isa = PBXGroup;
+			children = (
+				0934E63609122DA5A2565767 /* StartupView.swift */,
+			);
+			path = Startup;
+			sourceTree = "<group>";
+		};
+		AE49F676BBAB76A4CCA27274 /* AddEditHabit */ = {
+			isa = PBXGroup;
+			children = (
+				027F9F845F488D9934F6E582 /* AddEditHabitView.swift */,
+				83AFA162BE055EB2D021ADA7 /* ColorPickerRow.swift */,
+				C334DFD591CB9EEA6E0F1E25 /* WeekdayPicker.swift */,
+			);
+			path = AddEditHabit;
+			sourceTree = "<group>";
+		};
+		AE58C850B8EA6E12870A3988 /* Statistics */ = {
+			isa = PBXGroup;
+			children = (
+				A264EDA3E6152DD334A84E22 /* StatisticsView.swift */,
+			);
+			path = Statistics;
+			sourceTree = "<group>";
+		};
+		B3D7E1542287F46A67B7AE6A /* Notes */ = {
+			isa = PBXGroup;
+			children = (
+				3A26E466A4CFF92426F656CA /* NoteEditorView.swift */,
+				28BB6AD52F6AB1A65BD01D0A /* NoteRowView.swift */,
+				F8F8A52263FCC81171F3C0B6 /* NotesListView.swift */,
+				8507EDB7554D37A63B6DC342 /* RichTextEditor.swift */,
+			);
+			path = Notes;
+			sourceTree = "<group>";
+		};
+		B3F9CD6A70EE76C12B126AC0 /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				23AAA4BC0D833199A2A5B5CE /* DashboardView.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		B90C5979210176FC5A115F5F /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				96B0D43DE5A597DA478F093A /* ChatBubbleView.swift */,
+				A68B333DDB00BE544C3D00C3 /* ChatView.swift */,
+				C3D4E5F60718B2A3C4D5E6F7 /* ToolActionAnimationView.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		BCBA7E493E25C127EAB4218D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8B40F30936D236E17CAC6578 /* GrogyBot.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BE77E9A417B99421608B095F /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				B2CD2DEE881BBBADE9D5B9AC /* ChatViewModel.swift */,
+				378306A7F775DE5E28E7D040 /* HabitsViewModel.swift */,
+				76343E363C2BA079355B57C9 /* HealthViewModel.swift */,
+				CE9912901639465D93330872 /* NewsViewModel.swift */,
+				ECA2C727737309D05505F080 /* RemindersViewModel.swift */,
+				672769578B83BF776F3AEBC1 /* StatisticsViewModel.swift */,
+				BCD2823B049FC9FE7B116883 /* StocksViewModel.swift */,
+				522AE6DF9F707766884CC87B /* StuffViewModel.swift */,
+				F4B90A3581F7A8017176771C /* WeatherViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		C2FDC87B2B9C19D2D8BA58B5 /* Weather */ = {
+			isa = PBXGroup;
+			children = (
+				2C8817ABCEAED2E4BCBC0441 /* WeatherView.swift */,
+			);
+			path = Weather;
+			sourceTree = "<group>";
+		};
+		E327449CE76F22A23787629C /* GrogyBot */ = {
+			isa = PBXGroup;
+			children = (
+				1F6B29825E11364BF57294DF /* ContentView.swift */,
+				2096F0EA66186B3EE4499856 /* GrogyBot.entitlements */,
+				307A10314BDBB1A5728DF0E2 /* GrogyBotApp.swift */,
+				E5F5045D9E335AE22FE7F151 /* Info.plist */,
+				F6D6AD993898F74C3374EA08 /* Models */,
+				50242EBE1F7B15F63601A908 /* Resources */,
+				5AEABBA2BAE646A582D4E941 /* Utilities */,
+				BE77E9A417B99421608B095F /* ViewModels */,
+				02725D0DD0510D133C775604 /* Views */,
+			);
+			path = GrogyBot;
+			sourceTree = "<group>";
+		};
+		E647FAA552884F295B5112E8 /* Health */ = {
+			isa = PBXGroup;
+			children = (
+				B161014B372044D5C2D15291 /* HealthView.swift */,
+			);
+			path = Health;
+			sourceTree = "<group>";
+		};
+		F6D6AD993898F74C3374EA08 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				8E4980F6CD0E1F4F708CC640 /* ChatMessage.swift */,
+				5128536F7F252990D1E0C825 /* Frequency.swift */,
+				615871546CEF96CA5EF2B6CE /* Habit.swift */,
+				756561FA48D992BD5AA7A9F4 /* HabitEntry.swift */,
+				1D517955B06BE2555970D5EE /* HealthData.swift */,
+				EA4ED31FEC38A3B88F6AD545 /* NewsData.swift */,
+				4CA7A2F11AF60234496E2BF7 /* Reminder.swift */,
+				9BA3136B9ACFD25FC40CFA1C /* ReminderRepeat.swift */,
+				07C2CA26EB17125A5DE2F577 /* StockData.swift */,
+				7AEDFD30C6669DD6F2905FCC /* StuffCategory.swift */,
+				17D7B80D07CC43A7DDCECDD6 /* StuffItem.swift */,
+				461AEC9301B628988ABD9839 /* WeatherData.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		FF84DA83D3CD7108F21E184A = {
+			isa = PBXGroup;
+			children = (
+				E327449CE76F22A23787629C /* GrogyBot */,
+				BCBA7E493E25C127EAB4218D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		27FA7A64B7F780F8A7DD510C /* GrogyBot */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A5EC7885EC1EF5E5731850D2 /* Build configuration list for PBXNativeTarget "GrogyBot" */;
+			buildPhases = (
+				A7D258E57E9FCBCEF599EF00 /* Sources */,
+				647D1A2F996DBD6ABDA8A1CE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GrogyBot;
+			packageProductDependencies = (
+			);
+			productName = GrogyBot;
+			productReference = 8B40F30936D236E17CAC6578 /* GrogyBot.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EE022B3B4E170ABDC7BD1F02 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+			};
+			buildConfigurationList = 674C5F346A02F3A090AD3854 /* Build configuration list for PBXProject "GrogyBot" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = FF84DA83D3CD7108F21E184A;
+			minimizedProjectReferenceProxies = 1;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				27FA7A64B7F780F8A7DD510C /* GrogyBot */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		647D1A2F996DBD6ABDA8A1CE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C225A1C2A7F5273E62764AC1 /* Assets.xcassets in Resources */,
+				F8A1B2C3D4E5F607891A2B3C /* creating.mov in Resources */,
+				0C3896F908DD6DE21F875E3B /* Intro.MP4 in Resources */,
+				4F03A310A75A01CE11116319 /* burgas_vocabulary.txt in Resources */,
+				95004D89651614FBD0E36527 /* pernik_vocabulary.txt in Resources */,
+				A2F6D9021D819D96E08E321D /* plovdiv_vocabulary.txt in Resources */,
+				2367BE9A2CA99850D4502600 /* vrachanski_vocabulary.txt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A7D258E57E9FCBCEF599EF00 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				251AE0F343172A4E4F2CEDB4 /* AddEditHabitView.swift in Sources */,
+				1C821A6EE420ECC4AA044EE7 /* AddEditReminderView.swift in Sources */,
+				3ED59604F5A53EC09203F43B /* CalendarGridView.swift in Sources */,
+				2000C9750329111ABA8F802D /* ChatBubbleView.swift in Sources */,
+				F7D1FF3987BA3714DC37C402 /* ChatMessage.swift in Sources */,
+				231D342337DFA6BB186EE410 /* ChatView.swift in Sources */,
+				0C2C6AF319190F48CE160389 /* ChatViewModel.swift in Sources */,
+				31406B9A40B000B6A59F34DC /* ClaudeAPIService.swift in Sources */,
+				DF55C31C39DE375CFBC6E637 /* Color+Hex.swift in Sources */,
+				DC6120C22A9DA131351B2885 /* ColorPickerRow.swift in Sources */,
+				E4454C3573F4A76322DE46E7 /* ContentView.swift in Sources */,
+				5A66FD1D90A569579C57BE35 /* DashboardView.swift in Sources */,
+				645D2C97EABADA1D0C5F753E /* DateHelpers.swift in Sources */,
+				2019D64724D4F5512D18699B /* EmojiPickerView.swift in Sources */,
+				5A826B19F5A26C26969A32D7 /* Frequency.swift in Sources */,
+				6165744AD523B52EA81A2CD7 /* GrogyBotApp.swift in Sources */,
+				32A40D383A1FF5D77CC6559F /* Habit.swift in Sources */,
+				FD1E73AE04DAA1E09D5DCC35 /* HabitEntry.swift in Sources */,
+				11DD276C4CB399BEFEAAA398 /* HabitRowView.swift in Sources */,
+				0F0DD940B53B6A486ED593CA /* HabitsListView.swift in Sources */,
+				5774CD3043845AAF3B7936E6 /* HabitsViewModel.swift in Sources */,
+				0AE46B8E8F5E8356CEE1C8B3 /* HealthData.swift in Sources */,
+				5A0CC299F076CD8CE8762D99 /* HealthService.swift in Sources */,
+				DBAAA1179B8D86A9F83172F1 /* HealthView.swift in Sources */,
+				1741D14C1F5B84B7F34C4334 /* HealthViewModel.swift in Sources */,
+				51A07F0E5F65FFDE40718FE1 /* HistoryView.swift in Sources */,
+				27D649D8FF1825A1F21D2362 /* LanguageManager.swift in Sources */,
+				799FACB5262AC8DC7DF84E25 /* NewsData.swift in Sources */,
+				2098B1906C8F5CAFAF95C449 /* NewsService.swift in Sources */,
+				59B4CC38FD175A74E2F8B783 /* NewsView.swift in Sources */,
+				17BC10B6D39D5173A898776D /* NewsViewModel.swift in Sources */,
+				2036C9C7C2D7DF32AE6D6766 /* NoteEditorView.swift in Sources */,
+				887312C0B276BFF434F6B84D /* NoteRowView.swift in Sources */,
+				71C8FD747B793BB4C7B603E6 /* NotesListView.swift in Sources */,
+				069D931B5E76DACDBAEA7511 /* NotificationManager.swift in Sources */,
+				9806A9C4F294FE69BE2C3438 /* Reminder.swift in Sources */,
+				9EFC3AFD24D002FC4CA6C32D /* ReminderRepeat.swift in Sources */,
+				EE97CAB98D3CDE488064AD12 /* ReminderRowView.swift in Sources */,
+				11A0FFB8F7D01D917EF13AC6 /* RemindersListView.swift in Sources */,
+				9944DC92393324C6720B007A /* RemindersViewModel.swift in Sources */,
+				EB2A3D18E7232576A998566A /* RichTextEditor.swift in Sources */,
+				1E96804D265DD4422B581550 /* SettingsView.swift in Sources */,
+				A5D442FB12CC4990D533CE1F /* SpeechManager.swift in Sources */,
+				8B08872F6260DDDE132FDF96 /* StarRatingView.swift in Sources */,
+				4E797AB2E3C770B1B107DB2F /* StartupView.swift in Sources */,
+				07B47B46BC2D0D1BE2461492 /* StatisticsView.swift in Sources */,
+				56EEE3584475411A6FF00ED5 /* StatisticsViewModel.swift in Sources */,
+				4F00B8A2A921F958AC197935 /* StockData.swift in Sources */,
+				1D74D1C89D77076D94E75F4B /* StockService.swift in Sources */,
+				F95CF711B17C94B5DFC8E2DE /* StocksView.swift in Sources */,
+				C2D9C08B51E7041355047011 /* StocksViewModel.swift in Sources */,
+				EAFCFE636711E7BA929FC403 /* StreakBadgeView.swift in Sources */,
+				B84DD15E1F0B36DE9B64F8AB /* StuffCategory.swift in Sources */,
+				C4080A03A984C72E97395294 /* StuffItem.swift in Sources */,
+				805C3915A07486EEC6DA36E3 /* StuffViewModel.swift in Sources */,
+				662DF52B5A34D6A5F7114B4B /* Theme.swift in Sources */,
+				F8D4E5F607182C3A4B5C6D7E /* ToolActionAnimationView.swift in Sources */,
+				3B03893EC6BDB87B3009B011 /* WeatherData.swift in Sources */,
+				B475C472881F1A789CE2E5FB /* WeatherService.swift in Sources */,
+				6C64181D859A3589ABD61411 /* WeatherView.swift in Sources */,
+				BF3CD4160BB9A72F88D5B490 /* WeatherViewModel.swift in Sources */,
+				9D3679A7DD4FF25FE9A24295 /* WeekdayPicker.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		03E937AF36E0C277C208A910 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		07452A525AEB27FF2F81A3D8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = GrogyBot/GrogyBot.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6XCNJ3R75V;
+				INFOPLIST_FILE = GrogyBot/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.puxi.GrogyBot;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		AD57D453D33EFA5070684608 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = GrogyBot/GrogyBot.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6XCNJ3R75V;
+				INFOPLIST_FILE = GrogyBot/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.puxi.GrogyBot;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C25137C8F25EAC3C7A729E6A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		674C5F346A02F3A090AD3854 /* Build configuration list for PBXProject "GrogyBot" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C25137C8F25EAC3C7A729E6A /* Debug */,
+				03E937AF36E0C277C208A910 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A5EC7885EC1EF5E5731850D2 /* Build configuration list for PBXNativeTarget "GrogyBot" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AD57D453D33EFA5070684608 /* Debug */,
+				07452A525AEB27FF2F81A3D8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EE022B3B4E170ABDC7BD1F02 /* Project object */;
+}

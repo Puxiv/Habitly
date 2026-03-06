@@ -95,6 +95,36 @@ enum JSONValue: Codable, Equatable {
     }
 }
 
+// MARK: - Type-Erased Encodable Wrapper
+
+/// Wraps any `Encodable` value so heterogeneous types (client tools, server tools)
+/// can live in the same `[AnyEncodable]` array.
+struct AnyEncodable: Encodable {
+    private let _encode: (Encoder) throws -> Void
+
+    init<T: Encodable>(_ wrapped: T) {
+        _encode = wrapped.encode
+    }
+
+    func encode(to encoder: Encoder) throws {
+        try _encode(encoder)
+    }
+}
+
+// MARK: - Web Search Tool (Server-Side)
+
+/// Anthropic's server-side web search tool.
+/// Encoded as: {"type": "web_search_20250305", "name": "web_search", "max_uses": N}
+struct WebSearchTool: Encodable {
+    let type = "web_search_20250305"
+    let name = "web_search"
+    let max_uses: Int
+
+    init(maxUses: Int = 5) {
+        self.max_uses = maxUses
+    }
+}
+
 // MARK: - Tool Definition Structs
 
 struct ClaudeTool: Encodable {
@@ -136,12 +166,15 @@ struct ClaudeMessagePayload: Encodable {
     enum PayloadContent: Encodable {
         case text(String)
         case blocks([ContentBlock])
+        /// Raw JSON content for round-tripping server tool responses (web search, etc.)
+        case rawJSON([JSONValue])
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.singleValueContainer()
             switch self {
-            case .text(let s):    try container.encode(s)
-            case .blocks(let b):  try container.encode(b)
+            case .text(let s):      try container.encode(s)
+            case .blocks(let b):    try container.encode(b)
+            case .rawJSON(let j):   try container.encode(j)
             }
         }
     }
@@ -207,6 +240,10 @@ enum ClaudeResponseContent {
 struct ClaudeResult {
     let contentBlocks: [ClaudeResponseContent]
     let stopReason: String
+    /// Raw response content blocks as JSONValue for multi-turn round-tripping.
+    /// Preserves server_tool_use, web_search_tool_result (with encrypted_content),
+    /// and text blocks with citations — all needed for follow-up context.
+    let rawContentJSON: [JSONValue]
 }
 
 // MARK: - Private Request/Response Models
@@ -216,7 +253,7 @@ private struct ClaudeRequest: Encodable {
     let max_tokens: Int
     let system: String
     let messages: [ClaudeMessagePayload]
-    let tools: [ClaudeTool]?
+    let tools: [AnyEncodable]?
 }
 
 private struct ClaudeResponse: Decodable {
@@ -241,33 +278,36 @@ private struct ClaudeErrorResponse: Decodable {
 }
 
 // MARK: - Claude API Service
+//
+// Uses Swift `actor` to guarantee ALL work (JSON encoding, networking,
+// JSON decoding) runs on the actor's own background executor — never
+// on the main thread. This prevents the 100% CPU / frozen UI issue
+// on physical iPhones where previous approaches (Task.detached,
+// withThrowingTaskGroup racing, ephemeral sessions) all failed.
 
-final class ClaudeAPIService {
+actor ClaudeAPIService {
     static let shared = ClaudeAPIService()
 
     private let endpoint = URL(string: "https://api.anthropic.com/v1/messages")!
-    private let model = "claude-sonnet-4-20250514"
+    private let model = "claude-sonnet-4-6"
     private let apiVersion = "2023-06-01"
 
-    private init() {}
+    /// Single URLSession — reused across requests.
+    /// Actor isolation ensures no concurrent access issues.
+    private let session: URLSession
 
-    /// Create a fresh URLSession for each request.
-    /// This avoids the stale TCP connection reuse bug on physical iOS devices
-    /// where URLSession tries to send the 2nd request on a CLOSED connection
-    /// (tcp RST flag), causing `data(for:)` to hang forever.
-    private func makeFreshSession() -> URLSession {
-        let config = URLSessionConfiguration.ephemeral
-        config.timeoutIntervalForRequest = 30
-        config.timeoutIntervalForResource = 60
-        config.waitsForConnectivity = false
+    private init() {
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 60
+        config.timeoutIntervalForResource = 300
         config.httpShouldUsePipelining = false
-        return URLSession(configuration: config)
+        session = URLSession(configuration: config)
     }
 
     // MARK: - Tool Definitions
 
-    static var grogyBotTools: [ClaudeTool] {
-        [
+    static var grogyBotTools: [AnyEncodable] {
+        let clientTools: [ClaudeTool] = [
             ClaudeTool(
                 name: "create_reminder",
                 description: "Create a reminder for the user. Use ISO 8601 format for date_time (e.g. 2026-03-03T09:00:00). If the user says 'tomorrow', compute the actual date based on the current date provided in the system prompt.",
@@ -311,15 +351,23 @@ final class ClaudeAPIService {
                 )
             )
         ]
+
+        // Wrap client tools + add server-side web search tool
+        var allTools = clientTools.map { AnyEncodable($0) }
+        allTools.append(AnyEncodable(WebSearchTool(maxUses: 5)))
+        return allTools
     }
 
     // MARK: - Send with Tools
 
     /// Send a conversation to Claude with tool support and return structured result.
+    /// Because ClaudeAPIService is an `actor`, this entire method — JSON encoding,
+    /// networking, JSON decoding — runs on the actor's background executor,
+    /// never on the main thread.
     func sendMessageWithTools(
         systemPrompt: String,
         messages: [ClaudeMessagePayload],
-        tools: [ClaudeTool]? = nil
+        tools: [AnyEncodable]? = nil
     ) async throws -> ClaudeResult {
         guard let apiKey = UserDefaults.standard.string(forKey: "claude_api_key"),
               !apiKey.trimmingCharacters(in: .whitespaces).isEmpty else {
@@ -328,52 +376,53 @@ final class ClaudeAPIService {
 
         var request = URLRequest(url: endpoint)
         request.httpMethod = "POST"
-        request.timeoutInterval = 30
+        request.timeoutInterval = 60
         request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
         request.setValue(apiVersion, forHTTPHeaderField: "anthropic-version")
         request.setValue("application/json", forHTTPHeaderField: "content-type")
 
         let body = ClaudeRequest(
             model: model,
-            max_tokens: 1024,
+            max_tokens: 4096,
             system: systemPrompt,
             messages: messages,
             tools: tools
         )
 
+        print("[ClaudeAPI] Encoding request...")
         request.httpBody = try JSONEncoder().encode(body)
+        print("[ClaudeAPI] Encoded \(request.httpBody?.count ?? 0) bytes, starting network request...")
 
-        // CRITICAL: Create a fresh URLSession for EVERY request.
-        // On physical iOS devices, the TCP connection closes after the first
-        // API call (RST flag). URLSession reuses the dead connection for the
-        // 2nd request, causing data(for:) to hang forever. A fresh session
-        // forces a new TCP connection every time.
-        let freshSession = makeFreshSession()
-        request.setValue("close", forHTTPHeaderField: "Connection")
+        // Simple async/await — actor isolation keeps this off the main thread.
+        // URLSession.data(for:) respects Swift task cancellation automatically.
+        let (data, response) = try await session.data(for: request)
+        print("[ClaudeAPI] Received \(data.count) bytes")
 
-        let (data, response): (Data, URLResponse)
-        do {
-            (data, response) = try await Task.detached {
-                defer { freshSession.finishTasksAndInvalidate() }
-                return try await freshSession.data(for: request)
-            }.value
-        } catch is CancellationError {
-            freshSession.invalidateAndCancel()
-            throw CancellationError()
-        } catch {
-            freshSession.invalidateAndCancel()
-            print("[ClaudeAPI] Network error: \(error)")
+        guard let httpResponse = response as? HTTPURLResponse else {
             throw ChatError.networkError
         }
 
-        if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+        if httpResponse.statusCode != 200 {
             if let errorBody = try? JSONDecoder().decode(ClaudeErrorResponse.self, from: data) {
                 throw ChatError.apiError(errorBody.error.message)
             }
             throw ChatError.apiError("HTTP \(httpResponse.statusCode)")
         }
 
+        print("[ClaudeAPI] Decoding response...")
         do {
+            // 1. Decode raw JSON to preserve ALL block types for multi-turn round-tripping
+            //    (server_tool_use, web_search_tool_result with encrypted_content, citations, etc.)
+            let rawJSON = try JSONDecoder().decode(JSONValue.self, from: data)
+            let rawContentJSON: [JSONValue]
+            if case .object(let root) = rawJSON,
+               case .array(let contentArray) = root["content"] ?? .null {
+                rawContentJSON = contentArray
+            } else {
+                rawContentJSON = []
+            }
+
+            // 2. Decode with typed struct for convenient text/tool_use extraction
             let decoded = try JSONDecoder().decode(ClaudeResponse.self, from: data)
 
             let blocks: [ClaudeResponseContent] = decoded.content.compactMap { block in
@@ -385,15 +434,19 @@ final class ClaudeAPIService {
                     guard let id = block.id, let name = block.name else { return nil }
                     return .toolUse(ClaudeToolUse(id: id, name: name, input: block.input ?? [:]))
                 default:
+                    // server_tool_use, web_search_tool_result — preserved in rawContentJSON
                     return nil
                 }
             }
 
+            print("[ClaudeAPI] Done — stopReason: \(decoded.stop_reason ?? "nil")")
             return ClaudeResult(
                 contentBlocks: blocks,
-                stopReason: decoded.stop_reason ?? "end_turn"
+                stopReason: decoded.stop_reason ?? "end_turn",
+                rawContentJSON: rawContentJSON
             )
         } catch {
+            print("[ClaudeAPI] Decode error: \(error)")
             throw ChatError.decodingError
         }
     }
