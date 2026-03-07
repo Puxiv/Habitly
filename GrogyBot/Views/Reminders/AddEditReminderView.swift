@@ -49,7 +49,6 @@ struct AddEditReminderView: View {
             Form {
                 Section(lang.sectionNameIcon) {
                     TextField(lang.reminderNamePlaceholder, text: $draft.title)
-                    EmojiPickerView(emoji: $draft.emoji)
                 }
 
                 Section(lang.note) {

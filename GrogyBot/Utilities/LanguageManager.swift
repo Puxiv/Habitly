@@ -72,6 +72,11 @@ enum AppLanguage: String, CaseIterable {
         didSet { UserDefaults.standard.set(moduleNews, forKey: "module_news") }
     }
 
+    /// Free-form instructions the user wants the AI to follow (name, interests, etc.)
+    var customInstructions: String {
+        didSet { UserDefaults.standard.set(customInstructions, forKey: "custom_ai_instructions") }
+    }
+
     private static func loadBool(_ key: String, default defaultValue: Bool = true) -> Bool {
         UserDefaults.standard.object(forKey: key) == nil ? defaultValue : UserDefaults.standard.bool(forKey: key)
     }
@@ -88,6 +93,7 @@ enum AppLanguage: String, CaseIterable {
         self.moduleHealth = Self.loadBool("module_health")
         self.moduleStocks = Self.loadBool("module_stocks")
         self.moduleNews = Self.loadBool("module_news")
+        self.customInstructions = UserDefaults.standard.string(forKey: "custom_ai_instructions") ?? ""
     }
 
     /// Pick the right string for the current language.
@@ -429,6 +435,7 @@ extension LanguageManager {
     var voiceLabel:      String { t("\(aiName)'s Voice", "Гласът на \(aiName)", "Гласът на \(aiName)", "Гласът на \(aiName)", "Гласът на \(aiName)", "Гласът на \(aiName)") }
     var voiceAuto:       String { t("Auto", "Автоматично", "Автоматично", "Автоматично", "Автоматично", "Автоматично") }
     var modulesLabel:    String { t("Modules",             "Модули",              "Модули",              "Модули",              "Модули",              "Модули") }
+    var customInstructionsLabel: String { t("Custom Instructions", "Персонални инструкции", "Персонални инструкции", "Персонални инструкции", "Персонални инструкции", "Персонални инструкции") }
 
     // MARK: Health
     var healthTab:       String { t("Health",              "Здраве",              "Здравето",            "Здравето",            "Здравето",            "Здравето") }

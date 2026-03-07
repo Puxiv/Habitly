@@ -16,7 +16,6 @@ struct ChatView: View {
 
     @FocusState private var isInputFocused: Bool
     @State private var speechManager = SpeechManager()
-    @State private var animatingActionType: ChatMessage.ToolAction.ActionType?
 
     var body: some View {
         NavigationStack {
@@ -66,14 +65,7 @@ struct ChatView: View {
                                 speechManager.speak(last.content, locale: speechLocale, messageId: last.id)
                             }
                         }
-                        // Tool action animation: play video when a tool action is created
-                        if wasLoading && !isLoading,
-                           let last = chatVM.messages.last,
-                           let firstAction = last.toolActions.first {
-                            withAnimation(.spring(duration: 0.35)) {
-                                animatingActionType = firstAction.type
-                            }
-                        }
+
                     }
                 }
 
@@ -118,9 +110,7 @@ struct ChatView: View {
                     }
                 }
             }
-            .overlay {
-                ToolActionAnimationView(actionType: $animatingActionType)
-            }
+
         }
     }
 

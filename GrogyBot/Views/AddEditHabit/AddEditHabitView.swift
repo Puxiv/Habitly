@@ -51,7 +51,6 @@ struct AddEditHabitView: View {
             Form {
                 Section(lang.sectionNameIcon) {
                     TextField(lang.habitNamePlaceholder, text: $draft.name)
-                    EmojiPickerView(emoji: $draft.emoji)
                 }
 
                 Section(lang.sectionColor) {

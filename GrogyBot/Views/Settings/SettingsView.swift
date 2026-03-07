@@ -27,6 +27,22 @@ struct SettingsView: View {
                                 "Тури име на помощника. Пусни гласа да чуеш отговорите батка."))
                 }
 
+                // Custom Instructions
+                Section {
+                    TextEditor(text: $langBinding.customInstructions)
+                        .frame(minHeight: 120)
+                        .scrollContentBackground(.hidden)
+                } header: {
+                    Text(lang.customInstructionsLabel)
+                } footer: {
+                    Text(lang.t("Tell the assistant about yourself — your name, interests, preferences. It will use this context in every conversation.",
+                                "Разкажи на асистента за себе си — име, интереси, предпочитания. Ще използва тази информация във всеки разговор.",
+                                "Кажи на помощника за себе си — име, интереси. Ше го ползва във всеки разговор.",
+                                "Кажи на помощника за себе си — име, интереси. Ше го ползва във всеки разговор.",
+                                "Кажи на помощника за себе си бе — име, интереси. Ще го ползва във всеки разговор.",
+                                "Кажи на помощника за себе си батка — име, интереси. Ще го ползва във всеки разговор."))
+                }
+
                 // Voice Picker
                 Section {
                     // Auto option

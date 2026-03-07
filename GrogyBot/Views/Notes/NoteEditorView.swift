@@ -10,10 +10,8 @@ struct NoteEditorView: View {
     private let modelContext: ModelContext
 
     @State private var title: String = ""
-    @State private var emoji: String = "📝"
     @State private var attributedBody = NSAttributedString()
     @State private var isPinned = false
-    @State private var showEmojiPicker = false
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var formatter = RichTextFormatter()
     @FocusState private var isTitleFocused: Bool
@@ -30,20 +28,11 @@ struct NoteEditorView: View {
             // Content area
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
-                    // Emoji + Title
-                    HStack(alignment: .top, spacing: 12) {
-                        Button {
-                            showEmojiPicker = true
-                        } label: {
-                            Text(emoji)
-                                .font(.system(size: 36))
-                        }
-
-                        TextField(lang.noteTitlePlaceholder, text: $title, axis: .vertical)
-                            .font(.title.bold())
-                            .foregroundStyle(.white)
-                            .focused($isTitleFocused)
-                    }
+                    // Title
+                    TextField(lang.noteTitlePlaceholder, text: $title, axis: .vertical)
+                        .font(.title.bold())
+                        .foregroundStyle(.white)
+                        .focused($isTitleFocused)
 
                     // Date
                     if let item = itemToEdit {
@@ -71,15 +60,8 @@ struct NoteEditorView: View {
         .background(Theme.background)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button(lang.cancel) { dismiss() }
-            }
             ToolbarItem(placement: .confirmationAction) {
-                Button(lang.save) {
-                    save()
-                    dismiss()
-                }
-                .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
+                Button(lang.t("Done", "Готово", "Готово", "Готово", "Готово", "Готово")) { dismiss() }
             }
             ToolbarItem(placement: .primaryAction) {
                 Menu {
@@ -104,10 +86,8 @@ struct NoteEditorView: View {
                 }
             }
         }
-        .sheet(isPresented: $showEmojiPicker) {
-            EmojiPickerView(emoji: $emoji)
-        }
         .onAppear { populateIfEditing() }
+        .onDisappear { save() }
     }
 
     // MARK: - Formatting Toolbar
@@ -214,7 +194,6 @@ struct NoteEditorView: View {
             return
         }
         title = item.title
-        emoji = item.emoji
         isPinned = item.isPinned
         if let body = item.attributedBody {
             attributedBody = body
@@ -244,14 +223,13 @@ struct NoteEditorView: View {
 
         if let item = itemToEdit {
             item.title = trimmedTitle
-            item.emoji = emoji
             item.isPinned = isPinned
             item.bodyData = bodyDataArchived
             item.note = attributedBody.string
         } else {
             let item = StuffItem(
                 title: trimmedTitle,
-                emoji: emoji,
+                emoji: "📝",
                 note: attributedBody.string,
                 bodyData: bodyDataArchived,
                 isPinned: isPinned

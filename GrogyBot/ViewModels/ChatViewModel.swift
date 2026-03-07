@@ -576,7 +576,7 @@ final class ChatViewModel {
         if lang.moduleHabits {
             if !habits.isEmpty {
                 let habitLines = habits.prefix(15).map { h in
-                    "\(h.emoji) \(h.name)"
+                    h.name
                 }.joined(separator: ", ")
                 parts.append("USER'S HABITS: \(habitLines)")
             } else {
@@ -589,12 +589,12 @@ final class ChatViewModel {
             let upcoming = reminders.filter { !$0.isCompleted && $0.dateTime >= Date() }
             let overdue = reminders.filter { !$0.isCompleted && $0.dateTime < Date() }
             if !upcoming.isEmpty {
-                let lines = upcoming.prefix(10).map { "\($0.emoji) \($0.title)" }.joined(separator: ", ")
+                let lines = upcoming.prefix(10).map { $0.title }.joined(separator: ", ")
                 parts.append("UPCOMING REMINDERS: \(lines)")
             }
             if !overdue.isEmpty {
-                let lines = overdue.prefix(5).map { "\($0.emoji) \($0.title)" }.joined(separator: ", ")
-                parts.append("⚠️ OVERDUE REMINDERS: \(lines)")
+                let lines = overdue.prefix(5).map { $0.title }.joined(separator: ", ")
+                parts.append("OVERDUE REMINDERS: \(lines)")
             }
         }
 
@@ -602,7 +602,7 @@ final class ChatViewModel {
         if lang.moduleNotes {
             let active = noteItems.filter { !$0.isArchived }
             if !active.isEmpty {
-                let lines = active.prefix(10).map { "\($0.emoji) \($0.title)" }.joined(separator: ", ")
+                let lines = active.prefix(10).map { $0.title }.joined(separator: ", ")
                 parts.append("NOTES: \(lines)")
             }
         }
@@ -715,6 +715,12 @@ final class ChatViewModel {
             parts.append("When discussing weather: comment on the current conditions, suggest clothing or activities based on the forecast. You are not a meteorologist — keep it casual and helpful.")
         } else {
             parts.append("Weather data: not available. Location access may not be granted.")
+        }
+
+        // Custom user instructions (name, interests, preferences)
+        let instructions = lang.customInstructions.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !instructions.isEmpty {
+            parts.append("USER'S CUSTOM INSTRUCTIONS (follow these closely):\n\(instructions)")
         }
 
         return parts.joined(separator: "\n\n")

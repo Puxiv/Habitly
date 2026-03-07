@@ -11,15 +11,6 @@ struct HabitRowView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            // Emoji circle
-            ZStack {
-                Circle()
-                    .fill(accentColor.opacity(0.15))
-                    .frame(width: 44, height: 44)
-                Text(habit.emoji)
-                    .font(.title3)
-            }
-
             // Name + streak
             VStack(alignment: .leading, spacing: 3) {
                 Text(habit.name)

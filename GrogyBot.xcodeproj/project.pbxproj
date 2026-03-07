@@ -72,8 +72,7 @@
 		EB2A3D18E7232576A998566A /* RichTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8507EDB7554D37A63B6DC342 /* RichTextEditor.swift */; };
 		EE97CAB98D3CDE488064AD12 /* ReminderRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304C03496DF817D934E0290C /* ReminderRowView.swift */; };
 		F7D1FF3987BA3714DC37C402 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4980F6CD0E1F4F708CC640 /* ChatMessage.swift */; };
-		F8A1B2C3D4E5F607891A2B3C /* creating.mov in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F607891A2B3C4D /* creating.mov */; };
-		F8D4E5F607182C3A4B5C6D7E /* ToolActionAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F60718B2A3C4D5E6F7 /* ToolActionAnimationView.swift */; };
+
 		F95CF711B17C94B5DFC8E2DE /* StocksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C6369226A9FA64A8FE8C91 /* StocksView.swift */; };
 		FD1E73AE04DAA1E09D5DCC35 /* HabitEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756561FA48D992BD5AA7A9F4 /* HabitEntry.swift */; };
 /* End PBXBuildFile section */
@@ -125,8 +124,7 @@
 		8E4980F6CD0E1F4F708CC640 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
 		90071988BD1E59322CE22BD0 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
 		96B0D43DE5A597DA478F093A /* ChatBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBubbleView.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F607891A2B3C4D /* creating.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = creating.mov; sourceTree = "<group>"; };
-		C3D4E5F60718B2A3C4D5E6F7 /* ToolActionAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolActionAnimationView.swift; sourceTree = "<group>"; };
+
 		9BA3136B9ACFD25FC40CFA1C /* ReminderRepeat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderRepeat.swift; sourceTree = "<group>"; };
 		9F9DD93B316C20508184E593 /* pernik_vocabulary.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = pernik_vocabulary.txt; sourceTree = "<group>"; };
 		A264EDA3E6152DD334A84E22 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
@@ -208,7 +206,6 @@
 			children = (
 				55595581334FA7C694A6D1E6 /* Assets.xcassets */,
 				C623DA86030B6041EC2E3708 /* burgas_vocabulary.txt */,
-				A1B2C3D4E5F607891A2B3C4D /* creating.mov */,
 				3D9A7FBA55FE7639E599F1EC /* Intro.MP4 */,
 				9F9DD93B316C20508184E593 /* pernik_vocabulary.txt */,
 				F71C485426AD4B1B1086D82F /* plovdiv_vocabulary.txt */,
@@ -320,7 +317,6 @@
 			children = (
 				96B0D43DE5A597DA478F093A /* ChatBubbleView.swift */,
 				A68B333DDB00BE544C3D00C3 /* ChatView.swift */,
-				C3D4E5F60718B2A3C4D5E6F7 /* ToolActionAnimationView.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -462,7 +458,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C225A1C2A7F5273E62764AC1 /* Assets.xcassets in Resources */,
-				F8A1B2C3D4E5F607891A2B3C /* creating.mov in Resources */,
 				0C3896F908DD6DE21F875E3B /* Intro.MP4 in Resources */,
 				4F03A310A75A01CE11116319 /* burgas_vocabulary.txt in Resources */,
 				95004D89651614FBD0E36527 /* pernik_vocabulary.txt in Resources */,
@@ -534,7 +529,6 @@
 				C4080A03A984C72E97395294 /* StuffItem.swift in Sources */,
 				805C3915A07486EEC6DA36E3 /* StuffViewModel.swift in Sources */,
 				662DF52B5A34D6A5F7114B4B /* Theme.swift in Sources */,
-				F8D4E5F607182C3A4B5C6D7E /* ToolActionAnimationView.swift in Sources */,
 				3B03893EC6BDB87B3009B011 /* WeatherData.swift in Sources */,
 				B475C472881F1A789CE2E5FB /* WeatherService.swift in Sources */,
 				6C64181D859A3589ABD61411 /* WeatherView.swift in Sources */,

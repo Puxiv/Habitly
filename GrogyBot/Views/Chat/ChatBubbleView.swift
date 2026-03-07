@@ -83,9 +83,6 @@ struct ToolActionCardView: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            Text(action.emoji)
-                .font(.title2)
-
             VStack(alignment: .leading, spacing: 2) {
                 Text(action.title)
                     .font(.subheadline.weight(.semibold))

@@ -297,7 +297,7 @@ struct DashboardView: View {
 
     private var upcomingSubtitle: String {
         if let next = remindersVM.nextUpcoming(from: reminders) {
-            return "\(next.emoji) \(next.title)"
+            return next.title
         }
         return lang.dashUpcoming(remindersVM.upcomingCount(from: reminders))
     }
@@ -305,6 +305,6 @@ struct DashboardView: View {
     private var recentNotesSubtitle: String {
         let recent = notesVM.recentItems(from: noteItems, limit: 2)
         if recent.isEmpty { return lang.dashRecentlyAdded }
-        return recent.map { "\($0.emoji) \($0.title)" }.joined(separator: ", ")
+        return recent.map { $0.title }.joined(separator: ", ")
     }
 }

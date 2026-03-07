@@ -74,7 +74,6 @@ struct StatisticsView: View {
 
         return VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(habit.emoji)
                 Text(habit.name)
                     .font(.subheadline.weight(.medium))
                 Spacer()
